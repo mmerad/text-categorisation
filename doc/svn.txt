@@ -1,0 +1,12 @@
+Pour Initlisaer le dépot svn :
+svn checkout https://text-categorisation.googlecode.com/svn/trunk/ text-categorisation --username votre.email@gmail.com
+
+Pour ajouter un fichier nouvellement créé : 
+svn add chemin_vers_le_fichier.txt
+
+Pour update
+svn update
+
+Pour commit
+svn ci "Votre Message de commit"
+Puis tapez votre username et mot de passe
