@@ -48,4 +48,32 @@ La listes des categories est dispo dans les fichiers all-XXXX-strings.lc.txt dan
 
 Beaucoup de categories apparaissent dans zeo documents mais il faut les garder pour mesurer l'efficacité de notre catégorisation.
 
+III) Splits possibles
 
+a) Lewissplit non modifié
+
+- Training Set (13,625 docs): LEWISSPLIT="TRAIN";  TOPICS="YES" or "NO"
+- Test Set (6,188 docs):  LEWISSPLIT="TEST"; TOPICS="YES" or "NO"
+- Unused (1,765): LEWISSPLIT="NOT-USED" or TOPICS="BYPASS"
+
+peut être intéressant d'utiliser les non-used pour avoir des infos statistiques
+
+b) modapte split ( The Modified Apte )
+
+- Training Set (9,603 docs): LEWISSPLIT="TRAIN";  TOPICS="YES"
+- Test Set (3,299 docs): LEWISSPLIT="TEST"; TOPICS="YES"
+- Unused (8,676 docs):   LEWISSPLIT="NOT-USED"; TOPICS="YES"
+                     or TOPICS="NO" 
+                     or TOPICS="BYPASS"
+
+A UTILISER Pour la catégorisation sur les TOPICS
+
+Beaucoup moins de documents utilisés
+
+c)ModHayes Split (  The Modified Hayes ) 
+- Training Set (20856 docs): CGISPLIT="TRAINING-SET"
+- Test Set (722 docs): CGISPLIT="PUBLISHED-TESTSET"
+- Unused (0 docs)
+
+tous les docs utilisés.
+Quelques problèmes avec ce split, cependant assez interessant (ligne 535 547 du README)
