@@ -8,5 +8,5 @@ Pour update
 svn update
 
 Pour commit
-svn ci "Votre Message de commit"
+svn ci -m "Votre Message de commit"
 Puis tapez votre username et mot de passe
