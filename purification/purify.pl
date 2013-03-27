@@ -1,0 +1,201 @@
+#!/usr/bin/perl -w
+
+#####################################################################################
+#      Script pour le projet de catégorisation de documents textuels (Reuters)      #
+#                               INSA de Rennes - 4INFO                              #
+#                            Florian Teyssier - Mars 2013                           #
+#####################################################################################
+
+############################################### MODULES ###############################################
+#strict et warnings pour rendre Perl moins permissif
+use strict;
+use warnings;
+#porter pour la racinisation, cf le fichier porter.pm
+use purify_porter;
+
+############################################### FONCTIONS ###############################################
+#Fonction supprimant tous les caractères inutiles (on ne garde que les points)
+sub supression_caracteres {
+	my $ligne = shift;
+	$ligne =~ s/&.*;/ /g;	#On supprime les caractères HTML/XML spéciaux #NB : DOIT RESTER AU DEBUT
+	$ligne =~ s/°/ /g;		#On supprime les degrés
+	$ligne =~ s/%/ /g;		#On supprime les pourcents
+	$ligne =~ s/_/ /g;		#On supprime les tirets bas
+	$ligne =~ s/&/ /g;		#On supprime les esperluettes
+	$ligne =~ s/:/ /g;		#On supprime les doubles points
+	$ligne =~ s/"/ /g;		#On supprime les guillemets
+	$ligne =~ s/ / /g;		#On supprime les apostrophes
+	$ligne =~ s/@/ /g;		#On supprime les arobases
+	$ligne =~ s/#/ /g;		#On supprime les dièses
+	$ligne =~ s/~/ /g;		#On supprime les tildes
+	$ligne =~ s/=/ /g;		#On supprime les égaux
+	$ligne =~ s/\*/ /g;		#On supprime les étoiles
+	$ligne =~ s/\^/ /g;		#On supprime les accents circonflexes
+	$ligne =~ s/\|/ /g;		#On supprime les barres verticales
+	$ligne =~ s/£/ /g;		#On supprime les livres sterling
+	$ligne =~ s/€/ /g;		#On supprime les euros
+	$ligne =~ s/\$/ /g;		#On supprime les dollars
+	$ligne =~ s/;/ /g;		#On supprime les points virgules
+	$ligne =~ s/\!/ /g;		#On supprime les points exclamation
+	$ligne =~ s/\?/ /g;		#On supprime les points interrogation
+	$ligne =~ s/</ /g;		#On supprime les chevrons ouvrants
+	$ligne =~ s/>/ /g;		#On supprime les chevrons fermants
+	$ligne =~ s/\(/ /g;		#On supprime les parenthèses ouvrantes
+	$ligne =~ s/\)/ /g;		#On supprime les parenthèses fermantes
+	$ligne =~ s/\{/ /g;		#On supprime les croisillons ouvrants
+	$ligne =~ s/\}/ /g;		#On supprime les croisillons fermants
+	$ligne =~ s/\[/ /g;		#On supprime les crochets ouvrants
+	$ligne =~ s/\]/ /g;		#On supprime les crochets fermants
+	$ligne =~ s/\+/ /g;		#On supprime les plus
+	$ligne =~ s/-/ /g;		#On supprime les moins
+	$ligne =~ s/,/ /g;		#On supprime les virgules
+	$ligne =~ s/\\/ /g;		#On supprime les antislashs
+	$ligne =~ s/\// /g;		#On supprime les slashs
+	
+	return $ligne;
+}
+
+#Fonction racinant tous les mots
+sub racinisation {
+	my $ligne = shift;
+	#Le raciniseur "porter" semble supprimer certains retours à la lignes, on s'assurera avec ces variables de les maintenir
+	my ($n, $r) = (0, 0);
+	$n = 1 if($ligne =~ m/.*\n$/);
+	$r = 1 if($ligne =~ m/.*\r$/);
+	#Création un tableau contenant tous les mots de la ligne
+	my @mots = split(/ /,$ligne);
+	my @mots_racines;
+	#Parcours des mots à raciniser
+	foreach (@mots) {
+		#Utilisation du raciniseur "porter", et ajout au tableau des mots racinisés
+		push(@mots_racines,porter($_));
+	}
+	#Reconstruction une ligne avec les mots raciniés
+	$ligne = join(" ",@mots_racines);
+	#On s'assure que les retours à la ligne sont toujours présents
+	$ligne = $ligne."\n" if($n && !($ligne =~ m/.*\n$/));
+	$ligne = $ligne."\r" if($r && !($ligne =~ m/.*\r$/));
+	
+	return $ligne;
+}
+
+#Liste de mots que l'on considèrera comme inutiles (ainsi que des suffixes/extensions type "ll" pour "will"),
+#d'autres mots pourront être ajoutés à la liste pour éliminer les mots que l'on aura empiriquement déterminés comme inutiles
+my @mots_inutiles = qw/able about across after ain all almost also am among an and any are aren as at be because been but by can cannot could couldn dear did didn do does doesn don either else ever every for from get got had has hasn have he her hers him his how however i if in into is isn it its just least let like likely may me might mightn most must mustn my neither no nor not of off often on only or other our own rather said say says shan she should shouldn since so some than that the their them then there these they this tis to too twas us wants was wasn we were weren what when where which while who whom why will with won would wouldn yet you your ll ve re a b c d e f g h i j k l m n o p q r s t u v w x y z/;
+#Fonction supprimant les mots inutiles
+sub suppression_inutiles {
+	my $ligne = shift;
+	#Ma méthode semble supprimer certains retours à la lignes, on s'assurera avec ces variables de les maintenir
+	my ($n, $r) = (0, 0);
+	$n = 1 if($ligne =~ m/.*\n$/);
+	$r = 1 if($ligne =~ m/.*\r$/);
+	#Parcours des mots inutiles
+	foreach (@mots_inutiles) {
+		#Suppression du mot courant s'il apparait dans la ligne
+		$ligne =~ s/^$_\W+/ /g;
+		$ligne =~ s/\W+$_\W+/ /g;
+	}
+	#On s'assure que les retours à la ligne sont toujours présents
+	$ligne = $ligne."\n" if($n && !($ligne =~ m/.*\n$/));
+	$ligne = $ligne."\r" if($r && !($ligne =~ m/.*\r$/));
+	
+	return $ligne;
+}
+
+#La fonction qui sert à effectuer la purification (suppression des ponctuations sauf les points, suppression des mots inutiles, racinisation)
+sub purification {
+	my $ligne = shift;
+	#NB : l'ordre d'appel des fonctions suivantes est important
+	$ligne = lc($ligne);	#On passe tous les caractères en minuscules
+	$ligne = supression_caracteres($ligne);
+	$ligne = suppression_inutiles($ligne);	
+	$ligne = racinisation($ligne);
+	$ligne =~ s/ +/ /g;		#On remplace les espaces multiples par des espaces simples
+	
+	return $ligne;
+}
+
+############################################### SCRIPT ###############################################
+#On récupère la liste des fichiers SGM à purifier (le nom est : n importe quoi suivi un chiffre suivi de ".sgm",
+#ce qui fonctionne puisqu on changera l extension des fichiers modifiées de ".sgm" à ".pure.sgm")
+my @liste_sgm = <*[0-9].sgm>;
+
+#On vérifie si on a bien les droits en lecture sur les fichiers SGM et en écriture sur le dossier courant.
+foreach (@liste_sgm) {
+	die("Erreur : le programme n a pas autorisation en lecture sur $_.") if(!(-r $_));
+}
+die("Erreur : le programme n a pas autorisation en ecriture sur le dossier courant.") if(!( -w "./" ));
+
+#On parcourt tous les fichiers pour en créer une version purifiée
+foreach (@liste_sgm) {
+	#On ouvre les fichiers en lecture et en écriture, la variable $_ contient le nom du fichier en entrée,
+	#et on attribue à $nom le nom du fichier en sortie, c est-à-dire avec l extension modifiée de ".sgm" à ".pure.sgm"
+	open(ENTREE,"<$_") or die("Erreur lors de l ouverture du fichier $_.");
+	my $nom = $_;
+	$nom =~ s/\.sgm/.pure.sgm/;
+	open(SORTIE,">$nom") or die("Erreur lors de la creation du fichier $nom.");
+	
+	#Définition de variables pour la boucle qui suit
+	my $purifier = 0;	#Valeur a 1 si le texte devra être purifié, 0 sinon
+	my $debut;			#Valeur tampon pour le début une ligne splitée
+	my @reste;			#Tableau tampon pour le reste une ligne splitée
+	#On parcourt toutes les lignes du fichier entrée
+	while(my $ligne = <ENTREE>) {
+		#On traite les cas particuliers des lignes où les balises suivantes apparaissent (seul le texte entre ces balises doit être purifié)
+		#La méthode est la suivante : quand on trouve une balise ouvrante, on écrit dans le fichier ce qui était devant,
+		#et on demande la purification pour le reste de la ligne ($purifier = 1); quand on trouve une balise fermante,
+		#on purifie ce qui était devant avant de l écrire dans le fichier, et on stoppe la demande de purification pour le
+		#reste de la ligne ($purifier = 0)
+		while($ligne =~ m/<TITLE>/ or $ligne =~ m/<\/TITLE>/ or $ligne =~ m/<DATELINE>/ or $ligne =~ m/<\/DATELINE>/ or $ligne =~ m/<BODY>/ or $ligne =~ m/<\/BODY>/) {
+			if($ligne =~ m/<TITLE>/)
+			{
+				($debut, @reste) = split(/<TITLE>/, $ligne);
+				print(SORTIE $debut."<TITLE>");
+				$ligne = join("<TITLE>", @reste);
+				$purifier = 1;
+			}
+			elsif($ligne =~ m/<\/TITLE>/) {
+				($debut, @reste) = split(/<\/TITLE>/, $ligne);
+				$debut = purification($debut);
+				print(SORTIE $debut."</TITLE>");
+				$ligne = join("</TITLE>", @reste);
+				$purifier = 0;
+			}
+			elsif($ligne =~ m/<DATELINE>/)
+			{
+				($debut, @reste) = split(/<DATELINE>/, $ligne);
+				print(SORTIE $debut."<DATELINE>");
+				$ligne = join("<DATELINE>", @reste);
+				$purifier = 1;
+			}
+			elsif($ligne =~ m/<\/DATELINE>/) {
+				($debut, @reste) = split(/<\/DATELINE>/, $ligne);
+				$debut = purification($debut);
+				print(SORTIE $debut."</DATELINE>");
+				$ligne = join("</DATELINE>", @reste);
+				$purifier = 0;
+			}
+			elsif($ligne =~ m/<BODY>/)
+			{
+				($debut, @reste) = split(/<BODY>/, $ligne);
+				print(SORTIE $debut."<BODY>");
+				$ligne = join("<BODY>", @reste);
+				$purifier = 1;
+			}
+			elsif($ligne =~ m/<\/BODY>/) {
+				($debut, @reste) = split(/<\/BODY>/, $ligne);
+				$debut = purification($debut);
+				print(SORTIE $debut."</BODY>");
+				$ligne = join("</BODY>", @reste);
+				$purifier = 0;
+			}
+		}
+		#On écrit la ligne dans le fichier en l ayant au préalable purifié si nécessaire
+		$ligne = purification($ligne) if($purifier) ;
+		print(SORTIE $ligne);
+	}
+	
+	#On ferme les fichiers entrée et de sortie
+	close(ENTREE) or die("Erreur lors de la fermeture du fichier $_.");
+	close(SORTIE) or die("Erreur lors de la fermeture du fichier $nom.");
+}
