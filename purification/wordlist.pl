@@ -12,7 +12,15 @@ use strict;
 use warnings;
 #porter pour la racinisation, cf le fichier porter.pm
 
+use XML::Simple;
+
+
 ############################################### FONCTIONS ###############################################
+#verifie que ce qui est donné en paramètre est un array
+sub is_array {
+  my ($var) = @_;
+  return ( ref($var) eq 'ARRAY' );
+}
 
 #supprimer les doublons d'un array
 sub uniq {
@@ -24,11 +32,27 @@ sub purification {
 	my $ligne = shift;
 	#NB : l'ordre d'appel des fonctions suivantes est important
 	$ligne = lc($ligne);	#On passe tous les caractères en minuscules
-	$ligne =~ s/\W/\n/g;		#On remplace les espaces multiples par des espaces simples
-	
+	$ligne =~ s/\W+/\n/g;	#On remplace les espaces blancs par des retour à la ligne
+	$ligne =~ s/\d+//g; 	# on supprime tous les chiffres
 	$ligne =~ s/\n+/\n/g;	#On supprime les retours à la lignes consécutifs
+
 	return $ligne;
 }
+
+
+############################################### VARS #################################################
+my $nom;
+#nom du fichier
+my $nom_entry;
+#parser XML
+my $parser = XML::Simple->new( KeepRoot => 1 );
+
+
+
+
+
+
+
 
 ############################################### SCRIPT ###############################################
 #On récupère la liste des fichiers SGM à purifier (le nom est : n importe quoi suivi un chiffre suivi de ".sgm",
@@ -47,7 +71,8 @@ foreach (@liste_sgm) {
 	#On ouvre les fichiers en lecture et en écriture, la variable $_ contient le nom du fichier en entrée,
 	#et on attribue à $nom le nom du fichier en sortie, c est-à-dire avec l extension modifiée de ".sgm" à ".pure.sgm"
 	open(ENTREE,"<$_") or die("Erreur lors de l ouverture du fichier $_.");
-	my $nom = $_;
+	$nom = $_;
+	$nom_entry = $_;
 	$nom =~ s/\.sgm/.words.sgm/;
 	open(SORTIE,">$nom") or die("Erreur lors de la creation du fichier $nom.");
 	
@@ -62,31 +87,7 @@ foreach (@liste_sgm) {
 		#et on demande la purification pour le reste de la ligne ($purifier = 1); quand on trouve une balise fermante,
 		#on purifie ce qui était devant avant de l écrire dans le fichier, et on stoppe la demande de purification pour le
 		#reste de la ligne ($purifier = 0)
-		while($ligne =~ m/<TITLE>/ or $ligne =~ m/<\/TITLE>/ or $ligne =~ m/<DATELINE>/ or $ligne =~ m/<\/DATELINE>/ or $ligne =~ m/<BODY>/ or $ligne =~ m/<\/BODY>/) {
-			if($ligne =~ m/<TITLE>/)
-			{
-				($debut, @reste) = split(/<TITLE>/, $ligne);
-				$ligne = join("<TITLE>", @reste);
-				$purifier = 0;
-			}
-			elsif($ligne =~ m/<\/TITLE>/) {
-				($debut, @reste) = split(/<\/TITLE>/, $ligne);
-				$debut = purification($debut);
-				$ligne = join("</TITLE>", @reste);
-				$purifier = 0;
-			}
-			elsif($ligne =~ m/<DATELINE>/)
-			{
-				($debut, @reste) = split(/<DATELINE>/, $ligne);
-				$ligne = join("<DATELINE>", @reste);
-				$purifier = 0;
-			}
-			elsif($ligne =~ m/<\/DATELINE>/) {
-				($debut, @reste) = split(/<\/DATELINE>/, $ligne);
-				$debut = purification($debut);
-				$ligne = join("</DATELINE>", @reste);
-				$purifier = 0;
-			}
+		while($ligne =~ m/<BODY>/ or $ligne =~ m/<\/BODY>/) {
 			if($ligne =~ m/<BODY>/)
 			{
 				($debut, @reste) = split(/<BODY>/, $ligne);
@@ -103,23 +104,55 @@ foreach (@liste_sgm) {
 		#On écrit la ligne dans le fichier en l ayant au préalable purifié si nécessaire
 		$ligne = purification($ligne) if($purifier) ;
 		
-		#print(SORTIE $ligne) if ($purifier);
+		#on ajoute au t ableau de la liste des mots si c'est bon.
 		@liste_word = (@liste_word,split(/\n/, $ligne)) if ($purifier);
-}
-	
+	}
+	#SORTIE si on veut uniquement la liste des mots
+	#foreach (uniq(@liste_word)) {
+	#	print SORTIE $_."\n";
+	#}
 
-#@liste_word = uniq(@liste_word);
+	#Création d'une database pour decisiontree
+	print SORTIE $nom."\n";
 
-#my @tab = ("banane","banane","poisson","poisson");
+	#impression de la deuxième ligne de la db
+	print SORTIE "object name";
+	foreach (uniq(@liste_word)) {
+		print SORTIE " ".$_." symbolic";
+	}
+	print SORTIE " topic symbolic\n";
+	open(ENTREE,"<$nom_entry") or die("Erreur lors de l ouverture du fichier $nom_entry.");
+	my $doc = $parser->XMLin("$nom_entry");
 
-#foreach (uniq(@tab)) {
-#	print SORTIE $_."\n";
-#}
+	foreach my $reuters ( @{ $doc->{FILE}->{REUTERS} } ) {
+	  my @liste_topics;
+	  my $reutersbody = purification($reuters->{TEXT}->{BODY});
 
+#use Data::Dumper;
+#print Dumper  @{ $reuters->{TOPICS}->{D} };
 
-foreach (uniq(@liste_word)) {
-	print SORTIE $_."\n";
-}
+		if(is_array($reuters->{TOPICS}->{D})) {
+			@liste_topics =  @{ $reuters->{TOPICS}->{D} };
+		}
+		else
+		{
+			@liste_topics = ([],$reuters->{TOPICS}->{D})
+		}
+	  #@liste_topics =  @{ $reuters->{TOPICS}->{D} };
+
+	  foreach my $topic ( @liste_topics ) {
+	    print SORTIE $reuters->{NEWID};
+		foreach my $mot (uniq(@liste_word)) {
+			my $presence = "no";
+			if (index($reutersbody, $mot) != -1) {
+    			$presence = "yes";
+			}
+	  		print SORTIE " ".$presence;
+		}
+		print SORTIE " ".$topic."\n";
+	  }
+
+	}
 
 	#On ferme les fichiers entrée et de sortie
 	close(ENTREE) or die("Erreur lors de la fermeture du fichier $_.");

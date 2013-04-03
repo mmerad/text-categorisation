@@ -200,7 +200,7 @@ public class ItemSetReader {
 	    else
 		throw new FileFormatException("Attributes must be followed by" +
 					      " their type ('symbolic' or " +
-					      "'numerical')");
+					      "'numerical')  "+st.sval.toString());
 	}
 	
 	if (attributes.size() == 0)
