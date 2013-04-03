@@ -82,7 +82,7 @@ public class NaiveBayes {
 		b = b.replaceAll("\\.", "");//a tester
 		String[] mots = b.split("\\ ");
 		HashMap<String, Float> freq = new HashMap<String, Float>();
-		HashMap<String, Float> freq2 = new HashMap<String, Float>();
+		HashMap<String,Map<String,Float>> freq2 = new HashMap<String,Map<String,Float>>();
 		
 		int taille = mots.length;
 		
@@ -105,21 +105,29 @@ public class NaiveBayes {
 		{
 			for(int k = 0 ; k<topics.length ; k++){
 				if(probaMot.containsKey(mot)){
-					if(probaMot.get(mot).containsKey(topics[k])){
-				
-					float temp = probaMot.get(mot).get(topics[k]);
-					temp = (((freq.get(mot)/taille)+temp)/2)*(float)1.25;// Arbitraire : pondération de fréquence pour un mot/topic 
-					freq2.put(mot, temp);
-					System.out.println("If1 : "+mot+" "+temp + "  "+topics[k] );
-					}else{
+					if(probaMot.get(mot).containsKey(topics[k]))
+					{
 						
-						freq2.put(mot, (freq.get(mot)/taille));
-						System.out.println("Else 1 : "+mot+" "+topics[k]+" "+freq2.get(mot));
-						}
+						float temp = probaMot.get(mot).get(topics[k]);
+						temp = (((freq.get(mot)/taille)+temp)/2)*(float)1.25;// Arbitraire : pondération de fréquence pour un mot/topic 
+						if( !freq2.containsKey(mot))
+							freq2.put(mot,new HashMap<String, Float>());
+						freq2.get(mot).put(topics[k], temp);
+						//System.out.println("If1 : "+mot+" "+temp + "  "+topics[k] );
+					}
+					else
+					{
+						if( !freq2.containsKey(mot))
+							freq2.put(mot,new HashMap<String, Float>());
+						//System.out.println(mot);
+						freq2.get(mot).put(topics[k], (freq.get(mot)/taille));
+						//System.out.println("Else 1 : "+mot+" "+topics[k]+" "+freq2.get(mot).get(topics[k]));
+					}
 				}else{
-					
-					freq2.put(mot, (freq.get(mot)/taille));
-					System.out.println("Else 2 : "+mot+" "+topics[k]+" "+freq2.get(mot));
+					if(!freq2.containsKey(mot))
+						freq2.put(mot,new HashMap<String, Float>());
+					freq2.get(mot).put(topics[k], (freq.get(mot)/taille));
+					//System.out.println("Else 2 : "+mot+" "+topics[k]+" "+freq2.get(mot));
 				}
 
 				}
@@ -131,15 +139,21 @@ public class NaiveBayes {
 		}*/
 		
 		for(String mot : freq2.keySet()){
+			
 			for(int j = 0 ; j<topics.length ; j++){
+				//System.out.println(topics[j]);
 				if(!probaMot.containsKey(mot)){
 					probaMot.put(mot, new HashMap<String,Float>());
-					probaMot.get(mot).put(topics[j], freq2.get(mot));
+					probaMot.get(mot).put(topics[j], freq2.get(mot).get(topics[j]));
 				}
-				
-				if(!probaMot.get(mot).containsKey(topics[j])){
+				else { 
+					probaMot.get(mot).put(topics[j], freq2.get(mot).get(topics[j]));
+				}
+				System.out.println("voir le topic mot"+ mot+ " la valeur" +freq2.get(mot));
+				/*if(!probaMot.get(mot).containsKey(topics[j])){
+					//System.out.println("voir le topic "+ topics[j]+ " la valeur" +freq2.get(mot));
 					probaMot.get(mot).put(topics[j], freq2.get(mot));
-					}
+					}*/
 				}
 			}
 		}
@@ -208,6 +222,7 @@ public class NaiveBayes {
 				}
 			}
 			
+			// permet de calculer les deux meilleurs topics pour un texte donnée
 			int max_1 = 0;
 			String tpc_1 = "";
 			int max_2 = 0;
@@ -215,11 +230,16 @@ public class NaiveBayes {
 			
 			for(String tpc_m : tpc_h.keySet()){
 				if(max_1 <= tpc_h.get(tpc_m)){
+					max_2 =max_1;
+					tpc_2 = tpc_1;
 					max_1 = tpc_h.get(tpc_m);
 					tpc_1 = tpc_m;
-				}else if(max_2 <= tpc_h.get(tpc_m)){
+				}else{
+					if(max_2 < tpc_h.get(tpc_m)){
 					max_2 = tpc_h.get(tpc_m);
 					tpc_2 = tpc_m;
+				
+					}
 				}
 			}
 			
