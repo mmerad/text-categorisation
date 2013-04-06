@@ -1,0 +1,117 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage[pdftex]{graphicx}
+\usepackage{amsmath} %% Pour l'utilisation de mathématiques avancées
+\usepackage{hyperref} %% Pour inserer des liens hypertextes
+\usepackage{eurosym} %% L'affichage des euros
+\usepackage{tabularx} 
+\usepackage{float} %% Pour placer une figure à un endroit précis sans qu'il puisse être déplacé
+\usepackage{amssymb,amsfonts,textcomp}
+\usepackage{color}
+\usepackage{array}
+\usepackage{hhline}
+\usepackage{amsfonts}
+\usepackage{tabularx}
+\usepackage{pifont} %% Permet de faire des ticks dans les tableaux
+\usepackage{listings} 
+\usepackage{xr}
+
+%\usepackage{eso-pic}
+%\newcommand\BackgroundPic{
+%\put(-3,0){
+%\parbox[b][\paperheight]{\paperwidth}{%
+%\vfill
+%\centering
+%\includegraphics[width=\paperwidth,height=\paperheight,
+%keepaspectratio]{../../../images/photos_microRV/background3.png}%
+%\vfill
+%}}}
+
+% Permet de modifier les marges de la page (pour les mettre plus grandes)
+%\usepackage[left=15mm, right=15mm]{geometry}
+
+
+% Pour la prise en compte en têtes / pieds de page 
+\pagestyle{headings} %% Note ce systeme est beaucoup plus simple que celui de fancyhdr
+
+% espaces a la francaise -- Qu'est ce qu'on peut pas trouver!
+\frenchspacing
+\pagestyle{headings}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\title{Rapport de planification}
+\date{11 décembre 2012}
+ 
+\makeindex 
+ 
+\begin{document}
+
+%%%%\AddToShipoutPicture*{\BackgroundPic}
+
+\begin{titlepage}
+
+\begin{center}
+
+%\includegraphics[scale=0.70]{../../../images/logos/insa.png}\\[1cm]     
+
+
+\textsc{\Large Projet Text-Categorization}\\[0.5cm]
+
+
+% Title
+\HRule \\[0.4cm]
+{ \huge \bfseries Acquisition de connaissance}\\[0.4cm]
+
+\HRule \\[1.5cm]
+
+% Author and supervisor
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Auteurs:}\\
+Mathieu \textsc{Berland}\\
+Adeline \textsc{Granet}\\
+Vincent \textsc{L'Honoré}\\
+Charles \textsc{Robin}\\
+Margot \textsc{Racine}\\
+Martin \textsc{Seillan}\\
+Florian \textsc{Teyssier}\\
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+\end{flushright}
+\end{minipage}
+
+\vfill
+
+% Bottom of the page
+{\large \today}
+\end{center}
+
+\end{titlepage}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tableofcontents
+\newpage
+
+
+\input{introduction} % Vincent
+\input{ensembleDeTest} % Charles
+\input{epurationDesDonnee} % Florian
+\input{classifiers}  %Vincent
+\input{NaivesBayes} %Adeline
+\input{DecissionTree} %Margot
+\input{resultat}  %Martin
+\input{resultatNB} %Adeline
+\input{resultatDT}  %Mathieu
+\newpage
+\input{conclusion} % Martin
+
+\end{document}

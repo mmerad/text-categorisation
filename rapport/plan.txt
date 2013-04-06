@@ -1,7 +1,13 @@
-Introduction
+﻿Introduction
+
 1) Script pour l'épuration des données : stemming , séparation en différents ensembles de test/train dire ce qu'il fait, blabla..
+
 2) Présentation des classifier utilisés
+	
 a) Naivebayes : Dire comment ça marche, ce que fait effectivement votre classifer, tout ça
-b) Decision Tree : idem
+
+	b) Decision Tree : 
+idem
 3)Résultats des différents catégorisation avec/sans épuration, avec cl&assifier 1/2 etc ...
+
 Conclusion
