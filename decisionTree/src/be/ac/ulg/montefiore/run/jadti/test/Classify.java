@@ -19,12 +19,12 @@ public class Classify {
     
     static public void main(String[] args) {
     
-    String[] args2 = {"resources/test.db","resources/train.db"};	
+    //String[] args2 = {"resources/test.db","resources/train.db"};	
     //args[0] = "resources/test.db";
     //args[1] ="resources/train.db";
     		
-	if (!readArgs(args2))
-	    System.exit(-1);
+	if (!readArgs(args))
+	   System.exit(-1);
 	
 	AttributeSet attributes = learningSet.attributeSet();
 	SymbolicAttribute goalAttribute =
