@@ -19,6 +19,9 @@ public class NaiveBayes {
 	/**
 	 * @param args
 	 */
+	 
+	private int nb_text;
+	private int nb_sucess;
 	//MOT -> TOPIC -> FREQUENCE
 	
 	Map<String,Map<String,Float>> probaMot;
@@ -28,7 +31,7 @@ public class NaiveBayes {
 		probaMot = new HashMap<String, Map<String,Float>>();
 	}
 	
-	private void calcule()
+	private float calcule()
 	{
 		File[] fs = new FileFinder().findFiles("NotreDOssier ICI");
 		
@@ -48,8 +51,32 @@ public class NaiveBayes {
 				e.printStackTrace();
 			}
 		}
+		
+		nb_text = 0;
+		nb_success = 0;
+		File[] ftest = new FileFinder().findFiles("NotreDOssier ICI");
+		for(int i = 0; i< ftest.length; i++)
+		{
+			
+			try {
+				parseXML(fs[i]);
+			} catch (ParserConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SAXException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		float ratio = ((float)nb_text/(float)nb_success) * (float)100;
+		System.out.println("Resultat : \n  "+ nb_text+" analysés,  "+ ratio+"% de success");
+		return ratio;
 	}
 	
+	//train
 	private void parseXML(File f) throws ParserConfigurationException, SAXException, IOException
 	{
 		// crÃ©ation d'une fabrique de parseurs SAX
@@ -66,6 +93,46 @@ public class NaiveBayes {
 			algoNaives(b.contenu,"");
 		}
 		
+	}
+	
+	//test
+	private void parseXMLTest(File f) throws ParserConfigurationException, SAXException, IOException
+	{
+		// crÃ©ation d'une fabrique de parseurs SAX
+		SAXParserFactory fabrique = SAXParserFactory.newInstance();
+
+		// crÃ©ation d'un parseur SAX
+		SAXParser parseur = fabrique.newSAXParser();
+		BodyHandler gestionnaire = new BodyHandler();
+		TopicHandler gestionnaireTopic = new TopicHandler();
+		
+		parseur.parse(f, gestionnaire);
+		parseur.parse(f, gestionnaireTopic);
+		List<Body> lb = gestionnaire.getArticles();
+		List<Topic> lt = gestionnaireTopic.getthemes();
+		nb_text ++;
+		for(Body b : lb)
+		{
+			int index = lb.indexOf(b);
+			List<String> rep = association(b.contenu);
+			List<String> topics = separateTopic(lt.getItem(index));
+			for(String s : rep)
+			{
+				if(topics.contains(s)
+					nb_success ++;
+				else
+					System.out.println("Topic trouvé par notre algorithme "+ s+" liste des topics du texte "+ lt.getItem(index));
+			}
+		}
+		
+	}
+	
+	private List<String> separateTopic(String s)
+	{
+		s = s.replaceAll("<D>.", "");
+		s = s.toLowerCase();
+		String[] text_s = s.split("<\\d>");
+		return Array.asList(text_s);
 	}
 	
 	/**
@@ -166,7 +233,7 @@ public class NaiveBayes {
 		 * @param text_test
 		 */
 	
-		public void association(String text_test){
+		public List<String> association(String text_test){
 			text_test = text_test.replaceAll("\\.", "");
 			String[] text_test_tab = text_test.split("\\ ");
 			int taille = text_test_tab.length;
@@ -243,8 +310,11 @@ public class NaiveBayes {
 				}
 			}
 			
-			
+			ArrayList<String> rep = new ArrayList<String>();
+			rep.add(tpc_1);
+			rep.add(tpc_2);
 			System.out.println("Le sujet de ce texte est "+tpc_1+" & "+tpc_2);
+			return rep;
 		}
 			
 		
