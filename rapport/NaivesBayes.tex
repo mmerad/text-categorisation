@@ -1,6 +1,28 @@
 \subsection{Naives Bayes}
 
+\subsubsection{En théorie}
+\paragraph{}
+Nous avons choisit d'implémenter un des plus simple algorithme qui se base sur le théorème de Bayes. Cet algorithme utilise les probabilités conditionnelles pour permettre d'évaluer à quel topic un texte est plus sujet d'appartenir. On peut l'écrire sous la forme :  P( c$_{i}$ | t$_{j}$) , où c$_{i}$ est la catégorie i et  t$_{j}$ le texte que l'on souhaite classer. Ce document est lu comme un vecteur de mot. 
 
+\paragraph{}
+Voici les différentes étapes : 
+\begin{enumerate}
+\item Lors de l'apprentissage, avec des documents d’entraînement, on calcul la probabilité qu'un mot appartienne à un document sachant à quel topic ce dernier appartient. Pour cette partie, les vecteurs de mots des différents textes sont considérés indépendant pour pouvoir utiliser les différentes lois des probabilités.
+Pour un mot d'un texte, on obtient la probabilité suivante : P(mj|ci) P( m$_{j}$ | c$_{i}$). Pour cela, on calcule le nombre d’occurrence d'un mot dans un texte (nk) et on applique la formule suivante :
+\[\frac{ nk +1} {n+|vocabulaire|}\]
+ où n est le nombre total de mot dans le texte et |vocabulaire| le nombre de mots clés.
+
+\item Lors de la phase de test, lorsque l'on souhait classer un nouveau document, on calcule la probabilité qu'il appartienne à chaque topic grâce à l'équation de bayes suivante : 
+\[ P( c_{i} | t_{j})= \frac{P(c_{i}).P(t_{j}|c_{i})}{ P(t_{j})}\] 
+où on peut estimer $tj=<m1 m2 m3... mn>$, ce qui nous donne : 
+\[ P( c_{i} | m_{1} m_{2} m_{3}... m_{n})= \frac{P(c_{i}).P(m1 m2 m3... mn|c_{i})}{ P( m_{1} m_{2} m_{3}... m_{n})}\]
+\end{enumerate}
+	
+
+On cherche donc le topic pour lequel la probabilité d'avoir les mots de notre texte soit la plus forte.
+
+
+\subsubsection{En pratique}
 \paragraphs{Phase d'entraînement}  Nous récupérons un à un les textes prévus pour la phase d'entraînement. Ils seront tous traité individuellement dans un premier temps. Pour chaque texte,nous avons calculé l'espérance d'un mot dans un texte défini par un certain topic. Pour cela la fréquence de chaque mot est calculé selon le texte puis elle est divisé par la taille du texte. Cette valeur est ensuite mémorisé avec le topic associé au texte. Si le topic pour ce mot existe déjà, la moyenne est enregistré avec une pondération de 1,25 pour donner plus de poids face aux autres topics. A la fin de cette phase, nous obtenons pour chaque mot, un ensemble d'association entre topic et probabilité. 
 
 
