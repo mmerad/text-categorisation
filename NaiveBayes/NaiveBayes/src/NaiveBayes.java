@@ -21,7 +21,7 @@ public class NaiveBayes {
 	 */
 	 
 	private int nb_text;
-	private int nb_sucess;
+	private int nb_success;
 	//MOT -> TOPIC -> FREQUENCE
 	
 	Map<String,Map<String,Float>> probaMot;
@@ -33,7 +33,7 @@ public class NaiveBayes {
 	
 	private float calcule()
 	{
-		File[] fs = new FileFinder().findFiles("NotreDOssier ICI");
+		File[] fs = new FileFinder().findFiles("./train");
 		
 		for(int i = 0; i< fs.length; i++)
 		{
@@ -54,7 +54,7 @@ public class NaiveBayes {
 		
 		nb_text = 0;
 		nb_success = 0;
-		File[] ftest = new FileFinder().findFiles("NotreDOssier ICI");
+		File[] ftest = new FileFinder().findFiles("./test");
 		for(int i = 0; i< ftest.length; i++)
 		{
 			
@@ -115,10 +115,10 @@ public class NaiveBayes {
 		{
 			int index = lb.indexOf(b);
 			List<String> rep = association(b.contenu);
-			List<String> topics = separateTopic(lt.getItem(index));
+			List<String> topics = separateTopic(((List<Topic>)lt).getItem(index));
 			for(String s : rep)
 			{
-				if(topics.contains(s)
+				if(topics.contains(s))
 					nb_success ++;
 				else
 					System.out.println("Topic trouvé par notre algorithme "+ s+" liste des topics du texte "+ lt.getItem(index));
@@ -132,7 +132,7 @@ public class NaiveBayes {
 		s = s.replaceAll("<D>.", "");
 		s = s.toLowerCase();
 		String[] text_s = s.split("<\\d>");
-		return Array.asList(text_s);
+		return Arrays.asList(text_s);
 	}
 	
 	/**
@@ -216,7 +216,7 @@ public class NaiveBayes {
 				else { 
 					probaMot.get(mot).put(topics[j], freq2.get(mot).get(topics[j]));
 				}
-				System.out.println("voir le topic mot"+ mot+ " la valeur" +freq2.get(mot));
+				//System.out.println("voir le topic mot"+ mot+ " la valeur" +freq2.get(mot));
 				/*if(!probaMot.get(mot).containsKey(topics[j])){
 					//System.out.println("voir le topic "+ topics[j]+ " la valeur" +freq2.get(mot));
 					probaMot.get(mot).put(topics[j], freq2.get(mot));
@@ -313,7 +313,7 @@ public class NaiveBayes {
 			ArrayList<String> rep = new ArrayList<String>();
 			rep.add(tpc_1);
 			rep.add(tpc_2);
-			System.out.println("Le sujet de ce texte est "+tpc_1+" & "+tpc_2);
+			//System.out.println("Le sujet de ce texte est "+tpc_1+" & "+tpc_2);
 			return rep;
 		}
 			
@@ -326,17 +326,17 @@ public class NaiveBayes {
 		public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		NaiveBayes nb = new NaiveBayes();
-		nb.algoNaives("Adeline est gentille. Et Adeline est très très très gentille.","rose poisson");
-		nb.algoNaives("Martin est gentil. Et Martin est très très très généreux.","rouge poisson");
+		//nb.algoNaives("Adeline est gentille. Et Adeline est très très très gentille.","rose poisson");
+		//nb.algoNaives("Martin est gentil. Et Martin est très très très généreux.","rouge poisson");
 		
-		for(String mot : nb.probaMot.keySet()){
+		/*for(String mot : nb.probaMot.keySet()){
 			for(String top : nb.probaMot.get(mot).keySet()){
 				System.out.println(mot+" "+top+" "+nb.probaMot.get(mot).get(top));
 				
 			}		
-		}
+		}*/
 		
-		nb.association("gentille Adeline Martin gentil");
-		
+		//nb.association("gentille Adeline Martin gentil");
+		float ratio = nb.calcule();
 	}
 }

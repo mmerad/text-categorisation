@@ -21,18 +21,20 @@ public class BodyHandler extends DefaultHandler{
 	public BodyHandler(){
 		super();
 	}
+	
 	//détection d'ouverture de balise
-	public void startElement(String uri, String localName,
-			String qName, Attributes attributes) throws SAXException{
-		if(qName.equals("articles")){
+	public void startElement(String uri, String localName,String qName, Attributes attributes) throws SAXException{
+		System.out.println(qName+"fgfg");
+		if(qName.equals("xml")){
 			articles = new LinkedList<Body>();
 			inarticles = true;
 		}else if(qName.equals("BODY")){
 			body = new Body();
 			inBody = true;
-		}/*else {
 			buffer = new StringBuffer();
-			if(qName.equals("nom")){
+		}/*else {
+			
+			/*if(qName.equals("nom")){
 				inNom = true;
 			}else if(qName.equals("prenom")){
 				inPrenom = true;
@@ -47,12 +49,14 @@ public class BodyHandler extends DefaultHandler{
 	//détection fin de balise
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException{
-		if(qName.equals("articles")){
+		if(qName.equals("xml")){
 			inarticles = false;
-		}else if(qName.equals("Body")){
+		}else if(qName.equals("BODY")){
+			body.contenu = buffer.toString();
 			articles.add(body);
 			body = null;
 			inBody = false;
+			buffer = null;
 		}/*else if(qName.equals("nom")){
 			Body.setNom(buffer.toString());
 			buffer = null;
@@ -74,7 +78,7 @@ public class BodyHandler extends DefaultHandler{
 	public void characters(char[] ch,int start, int length)
 			throws SAXException{
 		String lecture = new String(ch,start,length);
-		if(buffer != null) buffer.append(lecture);       
+		if(buffer != null) buffer.append(lecture);    
 	}
 	//début du parsing
 	public void startDocument() throws SAXException {
