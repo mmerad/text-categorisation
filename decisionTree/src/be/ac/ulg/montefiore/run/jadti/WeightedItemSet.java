@@ -188,8 +188,9 @@ public class WeightedItemSet
 	    double[] frequencies = new double[attribute.nbValues];
 	    
 	    for (int i = 0; i < items.size(); i++) {
-		KnownSymbolicValue sv = (KnownSymbolicValue)
-		    item(i).valueOf(attributeSet.indexOf(attribute));
+			//System.out.println(item(i).valueOf(attributeSet.indexOf(attribute)));
+	    	KnownSymbolicValue sv = (KnownSymbolicValue)item(i).valueOf(attributeSet.indexOf(attribute));
+
 		frequencies[sv.intValue] +=
 		    ((Double) weights.elementAt(i)).doubleValue();
 	    }

@@ -1,0 +1,5 @@
+testtennis
+weather symbolic temperature symbolic humidity symbolic wind symbolic play symbolic
+sunny cool high weak no
+rain hot high strong no
+overcast hot high strong yes

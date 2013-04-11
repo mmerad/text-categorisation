@@ -18,37 +18,43 @@ public class Classify {
 
     
     static public void main(String[] args) {
-    
-    //String[] args2 = {"resources/test.db","resources/train.db"};	
-    //args[0] = "resources/test.db";
-    //args[1] ="resources/train.db";
     		
 	if (!readArgs(args))
 	   System.exit(-1);
 	
+	System.out.println(testSet.attributeSet().size()+" | "+learningSet.attributeSet().size());
+	
 	AttributeSet attributes = learningSet.attributeSet();
 	SymbolicAttribute goalAttribute =
-	    (SymbolicAttribute) attributes.attribute(0);
+	    (SymbolicAttribute) attributes.attribute(attributes.size()-1);
 	
 //      removeKnown(attributes.indexOf(attributes.findByName("CellId_1")),
 //  		    learningSet);
 //  	removeKnown(attributes.indexOf(attributes.findByName("CTT_3")),
 //  		    testSet);
 	
+	
 	System.out.println("Learning set size:" + learningSet.size());
 	System.out.println("Test set size:" + testSet.size());
 	
-	Vector testAttributesVector = new Vector();
-	testAttributesVector.add(attributes.findByName("CTT_1"));
-	testAttributesVector.add(attributes.findByName("CTT_3"));
-	testAttributesVector.add(attributes.findByName("CellId_1"));
+	Vector<Attribute> testAttributesVector = new Vector<Attribute>();
+
+	for(int i =1; i<attributes.size()-1;i++){
+		testAttributesVector.add(attributes.attribute(i));
+	}
+	//testAttributesVector.add(attributes.findByName("weather"));
+	//testAttributesVector.add(attributes.findByName("temperature"));
+	//testAttributesVector.add(attributes.findByName("humidity"));
+	//testAttributesVector.add(attributes.findByName("wind"));
+	
 	AttributeSet testAttributes = new AttributeSet(testAttributesVector);
 	
 	System.out.println("Building tree");
+	System.out.println("Goal Attribute : "+goalAttribute.toString());
 	DecisionTree tree =
 	    buildTree(learningSet, testAttributes, goalAttribute);
 	
-	printDot(tree);
+	//printDot(tree);
 
 	System.out.println("Testing");
 	System.out.println("Correct classification ratio: " +
@@ -108,10 +114,14 @@ public class Classify {
 	
 	for (int i = 0; i < testSet.size(); i++) {
 	    Item testItem = testSet.item(i);
-	    
 	    if (tree.guessGoalAttribute(testItem).
-		equals(testItem.valueOf(0)))
-		ratio++;
+		equals(testItem.valueOf(0))){
+	    	ratio++;	
+	    	System.out.println("Trouvé ! Topic réel : "+testItem.valueOf(0)+" Topic deviné : "+tree.guessGoalAttribute(testItem));
+	    }
+	    else {
+	    	System.out.println("Non trouvé ! Topic réel : "+testItem.valueOf(0)+" Topic deviné : "+tree.guessGoalAttribute(testItem));
+	    }
 	    	    
 	    nbTests++;
 	}
@@ -131,8 +141,8 @@ public class Classify {
 	
 	try {
 	    learningSet = ItemSetReader.read(new FileReader(args[0]));
-	    testSet = ItemSetReader.read(new FileReader(args[1]),
-					 learningSet.attributeSet());
+	    //testSet = ItemSetReader.read(new FileReader(args[1]), learningSet.attributeSet());
+	    testSet = ItemSetReader.read(new FileReader(args[1]));
 	}
 	catch(FileNotFoundException e) {
 	    System.err.println("File not found.");
