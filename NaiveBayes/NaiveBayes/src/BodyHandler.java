@@ -14,7 +14,7 @@ public class BodyHandler extends DefaultHandler{
 
 	private Body body;
 	private boolean inarticles, inBody;
-	
+	private boolean haveBody = false;
 	//buffer nous permettant de récupérer les données 
 	private StringBuffer buffer;
 
@@ -33,47 +33,36 @@ public class BodyHandler extends DefaultHandler{
 			body = new Body();
 			inBody = true;
 			buffer = new StringBuffer();
-		}/*else {
-			
-			/*if(qName.equals("nom")){
-				inNom = true;
-			}else if(qName.equals("prenom")){
-				inPrenom = true;
-			}else if(qName.equals("adresse")){
-				inAdresse = true;
-			}else{
-				//erreur, on peut lever une exception
-				throw new SAXException("Balise "+qName+" inconnue.");
-			}
-		}*/
+			haveBody = true;
+		}
 	}
 	//détection fin de balise
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException{
 		if(qName.equals("xml")){
 			inarticles = false;
-		}else if(qName.equals("BODY")){
+		}else if(qName.equals("TEXT"))
+		{//System.out.println(haveBody);
+			if(!haveBody)
+			{
+				body = new Body();
+				body.contenu = "";
+				articles.add(body);
+				body = null;
+				inBody = false;
+			}
+			else
+				haveBody = false;
+				
+		}
+		else if(qName.equals("BODY")){
 			body.contenu = buffer.toString();
 			articles.add(body);
 			body = null;
 			inBody = false;
 			buffer = null;
-		}/*else if(qName.equals("nom")){
-			Body.setNom(buffer.toString());
-			buffer = null;
-			inNom = false;
-		}else if(qName.equals("prenom")){
-			Body.setPrenom(buffer.toString());
-			buffer = null;
-			inPrenom = false;
-		}else if(qName.equals("adresse")){
-			Body.setAdresse(buffer.toString());
-			buffer = null;
-			inAdresse = false;
-		}else{
-			//erreur, on peut lever une exception
-			throw new SAXException("Balise "+qName+" inconnue.");
-		}   */       
+			
+		}
 	}
 	//détection de caractères
 	public void characters(char[] ch,int start, int length)

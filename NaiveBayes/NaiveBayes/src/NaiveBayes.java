@@ -14,6 +14,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.omg.CORBA.TCKind;
 import org.xml.sax.*;
 
+
 public class NaiveBayes {
 
 	/**
@@ -72,8 +73,9 @@ public class NaiveBayes {
 				e.printStackTrace();
 			}
 		}
-		float ratio = ((float)nb_text/(float)nb_success) * (float)100;
-		System.out.println("Resultat : \n  "+ nb_text+" analysés,  "+ ratio+"% de success");
+		float ratio = ((float) nb_success *(float)100)/ ((float) nb_text);
+		int rates = nb_text - nb_success;
+		System.out.println("Resultat : \n  "+ nb_text+" analysés,  "+ ratio+"% de success , et "+rates+" echecs");
 		return ratio;
 	}
 	
@@ -86,16 +88,24 @@ public class NaiveBayes {
 		// crÃ©ation d'un parseur SAX
 		SAXParser parseur = fabrique.newSAXParser();
 		SAXParser parseurTopic = fabrique.newSAXParser();
+		SAXParser parseurTitle = fabrique.newSAXParser();
+		
 		TopicHandler gestionnaireTopic = new TopicHandler();
 		BodyHandler gestionnaire = new BodyHandler();
+		TitleHandler gestionnaireTitle = new TitleHandler();
+		
 		parseur.parse(f, gestionnaire);
 		parseurTopic.parse(f, gestionnaireTopic);
+		parseurTopic.parse(f, gestionnaireTitle);
+		
 		List<Body> lb = gestionnaire.getArticles();
 		List<LinkedList<Topic>> lt = gestionnaireTopic.getthemes();
+		List<String> ll = gestionnaireTitle.getTitles();
 		
 		for(Body b : lb)
 		{
-			algoNaives(b.contenu,transformString(lt.get(lb.indexOf(b))));
+			int index = lb.indexOf(b);
+			algoNaives(b.contenu,transformString(lt.get(index)), ll.get(index));
 		}
 		
 	}
@@ -130,22 +140,30 @@ public class NaiveBayes {
 		parseurTopic.parse(f, gestionnaireTopic);
 		List<Body> lb = gestionnaire.getArticles();
 		List<LinkedList<Topic>> lt = gestionnaireTopic.getthemes();
-		nb_text ++;
+		
 		for(Body b : lb)
 		{
 			int index = lb.indexOf(b);
-			List<String> rep = association(b.contenu);
-			List<String> topics = separateTopic(lt.get(index));
-			for(String s : rep)
+			if(b.contenu != "")
 			{
-				if(!topics.isEmpty())
+				nb_text ++;
+				List<String> rep = association(b.contenu);
+				List<String> topics = separateTopic(lt.get(index));
+				boolean  is_succes = false;
+				for(String s : rep)
 				{
-					if(topics.contains(s))
-						nb_success ++;
-					else
-						System.out.println("Topic trouvé par notre algorithme "+ s+" liste des topics du texte "+ topics.get(0) );
+					if(!topics.isEmpty())
+					{
+						if(topics.contains(s) && !is_succes)
+						{
+							nb_success ++;
+							is_succes = true;
+						}
+						else
+							System.out.println("Topic trouvé par notre algorithme "+ s+", liste des topics du texte "+ topics.toString() );
+					}
 				}
-			}
+			}//else{System.out.println(lt.get(index).toString());}
 		}
 		
 	}
@@ -169,12 +187,16 @@ public class NaiveBayes {
 	
 	
 	//Appeler pour chaque body
-	public void algoNaives(String b, String t)
+	public void algoNaives(String b, String t, String titre)
 	{
 		b = b.replaceAll("\\.", "");//a tester
 		String[] mots = b.split("\\ ");
 		HashMap<String, Float> freq = new HashMap<String, Float>();
 		HashMap<String,Map<String,Float>> freq2 = new HashMap<String,Map<String,Float>>();
+		
+		//Si pas de body on fait rien
+		if(b == "")
+			return;
 		
 		int taille = mots.length;
 		
@@ -190,7 +212,7 @@ public class NaiveBayes {
 		
 		String[] topics = t.split("\\ ");
 		
-		//System.out.println(topics[0]+" "+topics[1] );
+	
 		
 		
 		for(String mot : freq.keySet() )
@@ -205,35 +227,32 @@ public class NaiveBayes {
 						if( !freq2.containsKey(mot))
 							freq2.put(mot,new HashMap<String, Float>());
 						freq2.get(mot).put(topics[k], temp);
-						//System.out.println("If1 : "+mot+" "+temp + "  "+topics[k] );
+				
 					}
 					else
 					{
 						if( !freq2.containsKey(mot))
 							freq2.put(mot,new HashMap<String, Float>());
-						//System.out.println(mot);
+						
 						freq2.get(mot).put(topics[k], (freq.get(mot)/taille));
-						//System.out.println("Else 1 : "+mot+" "+topics[k]+" "+freq2.get(mot).get(topics[k]));
+					
 					}
 				}else{
 					if(!freq2.containsKey(mot))
 						freq2.put(mot,new HashMap<String, Float>());
 					freq2.get(mot).put(topics[k], (freq.get(mot)/taille));
-					//System.out.println("Else 2 : "+mot+" "+topics[k]+" "+freq2.get(mot));
+					
 				}
 
 				}
 		}
 		
-		/*for(String a : freq2.keySet()){
-		System.out.println(a+" "+freq2.get(a));
-
-		}*/
+	
 		
 		for(String mot : freq2.keySet()){
 			
 			for(int j = 0 ; j<topics.length ; j++){
-				//System.out.println(topics[j]);
+
 				if(!probaMot.containsKey(mot)){
 					probaMot.put(mot, new HashMap<String,Float>());
 					probaMot.get(mot).put(topics[j], freq2.get(mot).get(topics[j]));
@@ -241,11 +260,7 @@ public class NaiveBayes {
 				else { 
 					probaMot.get(mot).put(topics[j], freq2.get(mot).get(topics[j]));
 				}
-				//System.out.println("voir le topic mot"+ mot+ " la valeur" +freq2.get(mot));
-				/*if(!probaMot.get(mot).containsKey(topics[j])){
-					//System.out.println("voir le topic "+ topics[j]+ " la valeur" +freq2.get(mot));
-					probaMot.get(mot).put(topics[j], freq2.get(mot));
-					}*/
+
 				}
 			}
 		}
@@ -269,20 +284,6 @@ public class NaiveBayes {
 			String max_tpc_2 = "";
 			
 			
-			/*for(int i = 0 ; i< taille ; i++){
-				if(probaMot.containsKey(text_test_tab[i])){
-					for(String tpc : probaMot.get(text_test_tab[i]).keySet()){
-						if(max_freq_1 < probaMot.get(text_test_tab[i]).get(tpc)){
-							max_freq_1 = probaMot.get(text_test_tab[i]).get(tpc);
-							max_tpc_1 = tpc;
-						}else if (max_freq_2 < probaMot.get(text_test_tab[i]).get(tpc)) {
-							max_freq_2 = probaMot.get(text_test_tab[i]).get(tpc);
-							max_tpc_2 = tpc;
-						}
-						
-					}
-				}
-			}*/
 			
 			HashMap<String,Integer> tpc_h = new HashMap<String,Integer>();
 			
@@ -338,7 +339,7 @@ public class NaiveBayes {
 			ArrayList<String> rep = new ArrayList<String>();
 			rep.add(tpc_1);
 			rep.add(tpc_2);
-			//System.out.println("Le sujet de ce texte est "+tpc_1+" & "+tpc_2);
+	
 			return rep;
 		}
 			
