@@ -118,7 +118,7 @@ sub purification {
 ############################################### SCRIPT ###############################################
 #On récupère la liste des fichiers SGM à purifier (le nom est : n importe quoi suivi un chiffre suivi de ".sgm",
 #ce qui fonctionne puisqu on changera l extension des fichiers modifiées de ".sgm" à ".pure.sgm")
-my @liste_sgm = <*[0-9].sgm>;
+my @liste_sgm = <*[0-9a-z\.].sgm>;
 
 #On vérifie si on a bien les droits en lecture sur les fichiers SGM et en écriture sur le dossier courant.
 foreach (@liste_sgm) {
@@ -134,6 +134,7 @@ foreach (@liste_sgm) {
 	my $nom = $_;
 	$nom =~ s/\.sgm/.pure.sgm/;
 	open(SORTIE,">$nom") or die("Erreur lors de la creation du fichier $nom.");
+	print(SORTIE "<xml>");
 	
 	#Définition de variables pour la boucle qui suit
 	my $purifier = 0;	#Valeur a 1 si le texte devra être purifié, 0 sinon
@@ -141,12 +142,13 @@ foreach (@liste_sgm) {
 	my @reste;			#Tableau tampon pour le reste une ligne splitée
 	#On parcourt toutes les lignes du fichier entrée
 	while(my $ligne = <ENTREE>) {
+		$ligne =~ s/&#//g;
 		#On traite les cas particuliers des lignes où les balises suivantes apparaissent (seul le texte entre ces balises doit être purifié)
 		#La méthode est la suivante : quand on trouve une balise ouvrante, on écrit dans le fichier ce qui était devant,
 		#et on demande la purification pour le reste de la ligne ($purifier = 1); quand on trouve une balise fermante,
 		#on purifie ce qui était devant avant de l écrire dans le fichier, et on stoppe la demande de purification pour le
 		#reste de la ligne ($purifier = 0)
-		while($ligne =~ m/<TITLE>/ or $ligne =~ m/<\/TITLE>/ or $ligne =~ m/<DATELINE>/ or $ligne =~ m/<\/DATELINE>/ or $ligne =~ m/<BODY>/ or $ligne =~ m/<\/BODY>/) {
+		while($ligne =~ m/<TITLE>/ or $ligne =~ m/<\/TITLE>/ or $ligne =~ m/<DATELINE>/ or $ligne =~ m/<\/DATELINE>/ or $ligne =~ m/<BODY>/ or $ligne =~ m/<\/BODY>/ or $ligne =~ m/<UNKNOWN>/ or $ligne =~ m/<\/UNKNOWN>/) {
 			if($ligne =~ m/<TITLE>/)
 			{
 				($debut, @reste) = split(/<TITLE>/, $ligne);
@@ -189,11 +191,26 @@ foreach (@liste_sgm) {
 				$ligne = join("</BODY>", @reste);
 				$purifier = 0;
 			}
+			elsif($ligne =~ m/<UNKNOWN>/)
+			{
+				($debut, @reste) = split(/<UNKNOWN>/, $ligne);
+				print(SORTIE $debut."<UNKNOWN>");
+				$ligne = join("<UNKNOWN>", @reste);
+				$purifier = 1;
+			}
+			elsif($ligne =~ m/<\/UNKNOWN>/) {
+				($debut, @reste) = split(/<\/UNKNOWN>/, $ligne);
+				$debut = purification($debut);
+				print(SORTIE $debut."</UNKNOWN>");
+				$ligne = join("</UNKNOWN>", @reste);
+				$purifier = 0;
+			}
 		}
 		#On écrit la ligne dans le fichier en l ayant au préalable purifié si nécessaire
 		$ligne = purification($ligne) if($purifier) ;
 		print(SORTIE $ligne);
 	}
+	print(SORTIE "</xml>");
 	
 	#On ferme les fichiers entrée et de sortie
 	close(ENTREE) or die("Erreur lors de la fermeture du fichier $_.");

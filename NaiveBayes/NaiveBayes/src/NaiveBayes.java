@@ -59,6 +59,7 @@ public class NaiveBayes {
 		{
 			
 			try {
+				parseXMLTest(fs[i]);
 				parseXML(fs[i]);
 			} catch (ParserConfigurationException e) {
 				// TODO Auto-generated catch block
@@ -84,15 +85,33 @@ public class NaiveBayes {
 
 		// crÃ©ation d'un parseur SAX
 		SAXParser parseur = fabrique.newSAXParser();
+		SAXParser parseurTopic = fabrique.newSAXParser();
+		TopicHandler gestionnaireTopic = new TopicHandler();
 		BodyHandler gestionnaire = new BodyHandler();
 		parseur.parse(f, gestionnaire);
+		parseurTopic.parse(f, gestionnaireTopic);
 		List<Body> lb = gestionnaire.getArticles();
+		List<LinkedList<Topic>> lt = gestionnaireTopic.getthemes();
 		
 		for(Body b : lb)
 		{
-			algoNaives(b.contenu,"");
+			algoNaives(b.contenu,transformString(lt.get(lb.indexOf(b))));
 		}
 		
+	}
+	
+	private String transformString(LinkedList<Topic> l)
+	{
+		String rep = "";
+		int i = 0;
+		for(Topic t : l)
+		{ 
+			i++;
+			rep += t.contenuTheme;
+			if(i != l.size())
+				rep += " ";
+		}
+		return rep;
 	}
 	
 	//test
@@ -103,36 +122,42 @@ public class NaiveBayes {
 
 		// crÃ©ation d'un parseur SAX
 		SAXParser parseur = fabrique.newSAXParser();
+		SAXParser parseurTopic = fabrique.newSAXParser();
 		BodyHandler gestionnaire = new BodyHandler();
 		TopicHandler gestionnaireTopic = new TopicHandler();
 		
 		parseur.parse(f, gestionnaire);
-		parseur.parse(f, gestionnaireTopic);
+		parseurTopic.parse(f, gestionnaireTopic);
 		List<Body> lb = gestionnaire.getArticles();
-		List<Topic> lt = gestionnaireTopic.getthemes();
+		List<LinkedList<Topic>> lt = gestionnaireTopic.getthemes();
 		nb_text ++;
 		for(Body b : lb)
 		{
 			int index = lb.indexOf(b);
 			List<String> rep = association(b.contenu);
-			List<String> topics = separateTopic(((List<Topic>)lt).getItem(index));
+			List<String> topics = separateTopic(lt.get(index));
 			for(String s : rep)
 			{
-				if(topics.contains(s))
-					nb_success ++;
-				else
-					System.out.println("Topic trouvé par notre algorithme "+ s+" liste des topics du texte "+ lt.getItem(index));
+				if(!topics.isEmpty())
+				{
+					if(topics.contains(s))
+						nb_success ++;
+					else
+						System.out.println("Topic trouvé par notre algorithme "+ s+" liste des topics du texte "+ topics.get(0) );
+				}
 			}
 		}
 		
 	}
 	
-	private List<String> separateTopic(String s)
+	private List<String> separateTopic(LinkedList<Topic> l)
 	{
-		s = s.replaceAll("<D>.", "");
-		s = s.toLowerCase();
-		String[] text_s = s.split("<\\d>");
-		return Arrays.asList(text_s);
+		List<String> ls = new ArrayList<String>();
+		for(Topic t : l)
+		{
+			ls.add(t.contenuTheme);
+		}
+		return ls;
 	}
 	
 	/**

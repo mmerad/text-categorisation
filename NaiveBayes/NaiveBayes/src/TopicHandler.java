@@ -1,35 +1,39 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.jar.Attributes;
+//import java.util.jar.Attributes;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
+import org.xml.sax.Attributes;
 
 public class TopicHandler extends DefaultHandler{
 
-	//résultats de notre parsing
+	//rï¿½sultats de notre parsing
 	private List<Topic> themes;
-
+	private List<LinkedList<Topic>> retour;
 	private Topic topic;
 	private boolean inthemes, inTopic;
 	
-	//buffer nous permettant de récupérer les données 
+	//buffer nous permettant de rï¿½cupï¿½rer les donnï¿½es 
 	private StringBuffer buffer;
 
 	// simple constructeur
 	public TopicHandler(){
 		super();
+		retour = new ArrayList<LinkedList<Topic>>();
 	}
 	//dÃ©tection d'ouverture de balise
 	public void startElement(String uri, String localName,
 			String qName, Attributes attributes) throws SAXException{
-		if(qName.equals("themes")){
+		if(qName.equals("TOPICS")){
 			themes = new LinkedList<Topic>();
 			inthemes = true;
-		}else if(qName.equals("BODY")){
+			
+		}else if(qName.equals("D")){
 			topic = new Topic();
 			inTopic = true;
+			buffer = new StringBuffer();
 		}/*else {
 			buffer = new StringBuffer();
 			if(qName.equals("nom")){
@@ -47,12 +51,15 @@ public class TopicHandler extends DefaultHandler{
 	//dÃ©tection fin de balise
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException{
-		if(qName.equals("themes")){
+		if(qName.equals("TOPICS")){
 			inthemes = false;
-		}else if(qName.equals("Body")){
+			retour.add((LinkedList<Topic>) themes);
+		}else if(qName.equals("D")){
+			topic.contenuTheme = buffer.toString();
 			themes.add(topic);
 			topic = null;
 			inTopic = false;
+			buffer = null;
 		}/*else if(qName.equals("nom")){
 			Body.setNom(buffer.toString());
 			buffer = null;
@@ -70,7 +77,7 @@ public class TopicHandler extends DefaultHandler{
 			throw new SAXException("Balise "+qName+" inconnue.");
 		}   */       
 	}
-	//dÃ©tection de caractères
+	//dÃ©tection de caractï¿½res
 	public void characters(char[] ch,int start, int length)
 			throws SAXException{
 		String lecture = new String(ch,start,length);
@@ -78,17 +85,17 @@ public class TopicHandler extends DefaultHandler{
 	}
 	//dÃ©but du parsing
 	public void startDocument() throws SAXException {
-		System.out.println("Début du parsing");
+		//System.out.println("Dï¿½but du parsing topic");
 	}
 	//fin du parsing
 	public void endDocument() throws SAXException {
-		System.out.println("Fin du parsing");
-		System.out.println("Resultats du parsing");
+		//System.out.println("Fin du parsing");
+		//System.out.println("Resultats du parsing");
 		
 	}
 	
-	public List<Topic> getthemes() {
-		return themes;
+	public List<LinkedList<Topic>> getthemes() {
+		return retour;
 	}
 	public void setthemes(List<Topic> themes) {
 		this.themes = themes;

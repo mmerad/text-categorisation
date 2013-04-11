@@ -1,9 +1,10 @@
 import java.util.LinkedList;
 import java.util.List;
-import java.util.jar.Attributes;
+//import java.util.jar.Attributes;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.Attributes;
 
 
 public class BodyHandler extends DefaultHandler{
@@ -23,8 +24,8 @@ public class BodyHandler extends DefaultHandler{
 	}
 	
 	//détection d'ouverture de balise
-	public void startElement(String uri, String localName,String qName, Attributes attributes) throws SAXException{
-		System.out.println(qName+"fgfg");
+	public void startElement(java.lang.String uri, java.lang.String localName, java.lang.String qName, Attributes attributes) throws SAXException{
+		
 		if(qName.equals("xml")){
 			articles = new LinkedList<Body>();
 			inarticles = true;
@@ -82,12 +83,12 @@ public class BodyHandler extends DefaultHandler{
 	}
 	//début du parsing
 	public void startDocument() throws SAXException {
-		System.out.println("Début du parsing");
+		//System.out.println("Début du parsing");
 	}
 	//fin du parsing
 	public void endDocument() throws SAXException {
-		System.out.println("Fin du parsing");
-		System.out.println("Resultats du parsing");
+		//System.out.println("Fin du parsing");
+		//System.out.println("Resultats du parsing");
 		
 	}
 	
