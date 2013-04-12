@@ -35,7 +35,7 @@ public class NaiveBayes {
 	
 	private float calcule()
 	{
-		File[] fs = new FileFinder().findFiles("./train");
+		File[] fs = new FileFinder().findFiles("./train_ss");
 		
 		for(int i = 0; i< fs.length; i++)
 		{
@@ -56,13 +56,13 @@ public class NaiveBayes {
 		
 		nb_text = 0;
 		nb_success = 0;
-		File[] ftest = new FileFinder().findFiles("./test");//ATTENTION mettre test
+		File[] ftest = new FileFinder().findFiles("./test_ss");//ATTENTION mettre test
 		for(int i = 0; i< ftest.length; i++)
 		{
 			
 			try {
 				parseXMLTest(fs[i]);
-				parseXML(fs[i]);
+				//parseXML(fs[i]);
 			} catch (ParserConfigurationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -54,13 +54,7 @@ public class TitleHandler extends DefaultHandler{
 	//détection fin de balise
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException{
-		/*
-		if(qName.equals("TITLE")){
-			titles.add(buffer.toString());
-			inTitle = false;
-			buffer = null;
-		}
-		*/
+		
 		if(qName.equals("REUTERS"))
 		{
 			//System.out.println(haveTitle);
