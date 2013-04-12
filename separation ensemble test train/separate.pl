@@ -1,9 +1,8 @@
 #!/usr/bin/perl
 
+# Ce script sert à séparer les fichier du corpus de test reuters en deux fichier : un fichier qui contient uniquement les articles qui vont servir à l'apprentissage, et un autre fichier qui contient 
 
 use Data::Dumper;
-#print Dumper  @liste_sgm;
-
 
 #On récupère la liste des fichiers SGM à purifier (le nom est : n importe quoi suivi un chiffre suivi de ".sgm",
 #ce qui fonctionne puisqu on changera l extension des fichiers modifiées de ".sgm" à ".pure.sgm")
