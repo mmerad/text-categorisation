@@ -1,1 +1,36 @@
 \subsection{Résultat des arbres de décission}
+
+\subsubsection{Ensemble de test}
+
+En raison de temps d’exécution beaucoup trop long due aux limitations de la bibliothèque que nous avons choisi d’utiliser, nous n’avons malheureusement pas pu tester notre implémentation sur l’ensemble de tous les documents présent dans le corpus.
+\paragraph{}
+Nous avons toutefois réussi à obtenir des résultats concluant sur un ensemble de test plus restreint composé d’un ensemble d’apprentissage contenant 187 articles et d’un ensemble de test qui en comprend 125.
+\paragraph{}
+L’ensemble d’apprentissage contient des articles sur 42 sujets et possède 2762 mots différents.
+
+\subsubsection{Résultats obtenus}
+
+Voici les résultats que nous obten
+
+\begin{center}
+    \begin{tabular}{| l | p{2cm} | p{2cm} | p{2cm} |}
+    \hline
+    & \% d'article bien classé & temps d'exécution & nombre d'attributs \\ \hline
+    Texte brut & 37.5 & 30.109s & 2762 \\ \hline
+    supression des mots inutiles & 35.7 & 27.486s & 2638 \\ \hline
+	racinisation & 32.1 & 23.855s & 2468 \\ \hline
+    supression et racinisation & 33.9 & 21.018s & 2295 \\
+    \hline
+    \end{tabular}
+\end{center}
+
+\subsubsection{Conclusion}
+
+Voici les conclusions que nous pouvons tirer de ces résultats.
+\paragraph{}
+La suppression des mots sémantiquement inutiles n’a que peu d’impact sur les résultats de l’algorithme. En effet, ces mots étant présent dans la plus part des articles, ils ne sont que très rarement chois pour créer une règle. Toutefois, leur suppression limite le nombre d’attribut de l’arbre, et améliore significativement le temps d’exécution.
+\paragraph{}
+La racinisation des mots permet de limiter encore plus le nombre d’attributs et donc de diminuer le temps d’exécution. Cependant, la perte d’information qu’elle implique a aussi un impact sur les performances de l’algorithme.
+\paragraph{}
+Effectuer la suppression des mots inutiles avant de raciniser les mots restant semble limiter cette perte d’information, et permet de plus d’amélioré encore le temps d’exécution. Cette méthode de prétraitement donne ainsi le meilleur rapport performance / temps d’exécution.
+
