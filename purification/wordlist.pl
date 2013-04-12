@@ -27,14 +27,68 @@ sub uniq {
     return keys %{{ map { $_ => 1 } @_ }};
 }
 
+#supprimer les doublons d'un array
+sub uniq {
+    return keys %{{ map { $_ => 1 } @_ }};
+}
+
+#Fonction racinant tous les mots
+sub racinisation {
+	my $ligne = shift;
+	#Le raciniseur "porter" semble supprimer certains retours à la lignes, on s'assurera avec ces variables de les maintenir
+	my ($n, $r) = (0, 0);
+	$n = 1 if($ligne =~ m/.*\n$/);
+	$r = 1 if($ligne =~ m/.*\r$/);
+	#Création un tableau contenant tous les mots de la ligne
+	my @mots = split(/ /,$ligne);
+	my @mots_racines;
+	#Parcours des mots à raciniser
+	foreach (@mots) {
+		#Utilisation du raciniseur "porter", et ajout au tableau des mots racinisés
+		push(@mots_racines,porter($_));
+	}
+	#Reconstruction une ligne avec les mots raciniés
+	$ligne = join(" ",@mots_racines);
+	#On s'assure que les retours à la ligne sont toujours présents
+	$ligne = $ligne."\n" if($n && !($ligne =~ m/.*\n$/));
+	$ligne = $ligne."\r" if($r && !($ligne =~ m/.*\r$/));
+	
+	return $ligne;
+}
+
+#Liste de mots que l'on considèrera comme inutiles (ainsi que des suffixes/extensions type "ll" pour "will"),
+#d'autres mots pourront être ajoutés à la liste pour éliminer les mots que l'on aura empiriquement déterminés comme inutiles
+my @mots_inutiles = qw/able about across after ain all almost also am among an and any are aren as at be because been but by can cannot could couldn dear did didn do does doesn don either else ever every for from get got had has hasn have he her hers him his how however i if in into is isn it its just least let like likely may me might mightn most must mustn my neither no nor not of off often on only or other our own rather said say says shan she should shouldn since so some than that the their them then there these they this tis to too twas us wants was wasn we were weren what when where which while who whom why will with won would wouldn yet you your ll ve re a b c d e f g h i j k l m n o p q r s t u v w x y z/;
+#Fonction supprimant les mots inutiles
+sub suppression_inutiles {
+	my $ligne = shift;
+	#Ma méthode semble supprimer certains retours à la lignes, on s'assurera avec ces variables de les maintenir
+	my ($n, $r) = (0, 0);
+	$n = 1 if($ligne =~ m/.*\n$/);
+	$r = 1 if($ligne =~ m/.*\r$/);
+	#Parcours des mots inutiles
+	foreach (@mots_inutiles) {
+		#Suppression du mot courant s'il apparait dans la ligne
+		$ligne =~ s/^$_\W+/ /g;
+		$ligne =~ s/\W+$_\W+/ /g;
+	}
+	#On s'assure que les retours à la ligne sont toujours présents
+	$ligne = $ligne."\n" if($n && !($ligne =~ m/.*\n$/));
+	$ligne = $ligne."\r" if($r && !($ligne =~ m/.*\r$/));
+	
+	return $ligne;
+}
+
 #La fonction qui sert à effectuer la purification (suppression des ponctuations sauf les points, suppression des mots inutiles, racinisation)
 sub purification {
 	my $ligne = shift;
 	#NB : l'ordre d'appel des fonctions suivantes est important
-	$ligne = lc($ligne);	#On passe tous les caractères en minuscules
-	$ligne =~ s/\W+/\n/g;	#On remplace les espaces blancs par des retour à la ligne
-	$ligne =~ s/\d+//g; 	# on supprime tous les chiffres
-	$ligne =~ s/\n+/\n/g;	#On supprime les retours à la lignes consécutifs
+	$ligne = lc($ligne);						#On passe tous les caractères en minuscules
+	#$ligne = suppression_inutiles($ligne);		#On supprimme les mots "inutils"
+	#$ligne = racinisation($ligne);				#On racinise les mots
+	$ligne =~ s/\W+/\n/g;						#On remplace les espaces blancs par des retour à la ligne
+	$ligne =~ s/\d+//g; 						#On supprime tous les chiffres
+	$ligne =~ s/\n+/\n/g;						#On supprime les retours à la lignes consécutifs
 
 	return $ligne;
 }
