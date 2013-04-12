@@ -161,7 +161,6 @@ public class ItemSetReader {
 	String name;
 		
 	if ( st.nextToken() != StreamTokenizer.TT_WORD) {
-		System.out.println(st.ttype + " " + StreamTokenizer.TT_WORD);
 	    throw new FileFormatException("Invalid database name" + st.ttype);
 	    
 	}
@@ -169,7 +168,6 @@ public class ItemSetReader {
 	name = st.sval;
 	
 	if (st.nextToken() != StreamTokenizer.TT_EOL) {
-		System.out.println(st.ttype);
 	    throw new FileFormatException("First line must only hold one word" +
 					  " (the database name)");
 	}
@@ -290,8 +288,6 @@ public class ItemSetReader {
 	}
 	if (attributeNb != attributes.size()
 			|| st.ttype != StreamTokenizer.TT_EOL) {
-		System.out.println( attributeNb+"  "+attributes.size());
-		System.out.println(st.ttype+" "+st.sval);
 	    throw new FileFormatException("Bad number of attributes");
 	}
 	return values;
