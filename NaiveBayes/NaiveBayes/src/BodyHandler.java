@@ -24,7 +24,8 @@ public class BodyHandler extends DefaultHandler{
 	}
 	
 	//détection d'ouverture de balise
-	public void startElement(java.lang.String uri, java.lang.String localName, java.lang.String qName, Attributes attributes) throws SAXException{
+	public void startElement(java.lang.String uri, java.lang.String localName,
+			java.lang.String qName, Attributes attributes) throws SAXException{
 		
 		if(qName.equals("xml")){
 			articles = new LinkedList<Body>();

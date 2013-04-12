@@ -23,6 +23,7 @@ public class NaiveBayes {
 	 
 	private int nb_text;
 	private int nb_success;
+	private static final float POIDS_TITRE = (float)1.75;//(float) 1.75;
 	//MOT -> TOPIC -> FREQUENCE
 	
 	Map<String,Map<String,Float>> probaMot;
@@ -55,7 +56,7 @@ public class NaiveBayes {
 		
 		nb_text = 0;
 		nb_success = 0;
-		File[] ftest = new FileFinder().findFiles("./test");
+		File[] ftest = new FileFinder().findFiles("./test");//ATTENTION mettre test
 		for(int i = 0; i< ftest.length; i++)
 		{
 			
@@ -96,7 +97,7 @@ public class NaiveBayes {
 		
 		parseur.parse(f, gestionnaire);
 		parseurTopic.parse(f, gestionnaireTopic);
-		parseurTopic.parse(f, gestionnaireTitle);
+		parseurTitle.parse(f, gestionnaireTitle);
 		
 		List<Body> lb = gestionnaire.getArticles();
 		List<LinkedList<Topic>> lt = gestionnaireTopic.getthemes();
@@ -105,6 +106,7 @@ public class NaiveBayes {
 		for(Body b : lb)
 		{
 			int index = lb.indexOf(b);
+			//System.out.println(lb.size()+"  "+lt.size()+"  "+index);
 			algoNaives(b.contenu,transformString(lt.get(index)), ll.get(index));
 		}
 		
@@ -159,13 +161,12 @@ public class NaiveBayes {
 							nb_success ++;
 							is_succes = true;
 						}
-						else
+						else if(!topics.contains(s))
 							System.out.println("Topic trouvé par notre algorithme "+ s+", liste des topics du texte "+ topics.toString() );
 					}
 				}
 			}//else{System.out.println(lt.get(index).toString());}
-		}
-		
+		}	
 	}
 	
 	private List<String> separateTopic(LinkedList<Topic> l)
@@ -186,48 +187,68 @@ public class NaiveBayes {
 	 */
 	
 	
-	//Appeler pour chaque body
+	/**
+	 * algoNaives(String, String, String)
+	 * Cette fonction sert pour la partie "apprentissage". Elle permet d'associer 
+	 * les mots d'un article avec les topics et les titres de ce dernier avec plus 
+	 * ou moins de poids en fonction de la fréquence d'apparition.
+	 * Etape 1 : Calcul la fréquence pour le texte en paramètre
+	 * Etape 2 : Si les associations (BODY-TITLE et BODY-TOPICS existent déjà, 
+	 * 			 on pondère cette relation sinon on l'ajoute
+	 * 
+	 * @param b BOBY d'un article
+	 * @param t TOPICS d'un article
+	 * @param titre TITLE d'un article
+	 */
 	public void algoNaives(String b, String t, String titre)
 	{
-		b = b.replaceAll("\\.", "");//a tester
-		String[] mots = b.split("\\ ");
-		HashMap<String, Float> freq = new HashMap<String, Float>();
+		b = b.replaceAll("\\.", "");
+		String[] mots = b.split("\\ ");//Permet de stocker les mots du BODY dans une liste
+		
+		HashMap<String, Float> freq = new HashMap<String, Float>(); 
 		HashMap<String,Map<String,Float>> freq2 = new HashMap<String,Map<String,Float>>();
 		
-		//Si pas de body on fait rien
-		if(b == "")
-			return;
 		
-		int taille = mots.length;
+		/*
+		 * Certains textes n'ont pas de BODY.
+		 * Pour ne pas fausser notre apprentissage,
+		 * on ne les étudiera pas.
+		 */
 		
-		for(int i = 0; i < taille; i++)
-		{
-			float val = (freq.containsKey(mots[i]))? freq.get(mots[i]) : (float)0.0;
-			freq.put(mots[i], val+1);
-		}
-		
-		
-		
-		// TODO Voir si les TOPICS sont bien organisés <MOT><ESPACE><MOT><ESPACE><MOT>
-		
-		String[] topics = t.split("\\ ");
-		
-	
-		
-		
-		for(String mot : freq.keySet() )
-		{
-			for(int k = 0 ; k<topics.length ; k++){
-				if(probaMot.containsKey(mot)){
-					if(probaMot.get(mot).containsKey(topics[k]))
-					{
-						
-						float temp = probaMot.get(mot).get(topics[k]);
-						temp = (((freq.get(mot)/taille)+temp)/2)*(float)1.25;// Arbitraire : pondération de fréquence pour un mot/topic 
-						if( !freq2.containsKey(mot))
-							freq2.put(mot,new HashMap<String, Float>());
-						freq2.get(mot).put(topics[k], temp);
-				
+		if(b != ""){
+			
+			int taille = mots.length;// Nombre de mots dans l'article
+			
+			for(int i = 0; i < taille; i++) // Calcul de la fréquence de chaque mot dans l'article
+			{
+				float val = (freq.containsKey(mots[i]))? freq.get(mots[i]) : (float)0.0;
+				freq.put(mots[i], val+1);
+			}
+			
+			
+					
+			String[] topics = t.split("\\ ");//Permet de stocker les mots du TOPICS dans une liste
+			
+			/* Boucle for
+			 * Permet d'associer les mots d'un article avec les topics et les titres de ce dernier avec plus 
+			 * ou moins de poids en fonction de la fréquence d'apparition.
+			 * Si l'association n'apparait pas, elle est créée
+			 */
+			
+			for(String mot : freq.keySet() )
+			{
+				for(int k = 0 ; k<topics.length ; k++)
+				{
+					if(probaMot.containsKey(mot) && probaMot.get(mot).containsKey(topics[k]))
+					{							
+							float temp = probaMot.get(mot).get(topics[k]);
+							temp = (((freq.get(mot)/taille)+temp)/2)*(float)1.25;// Arbitraire : pondération de fréquence pour un mot/topic 
+							
+							if(!freq2.containsKey(mot))
+								freq2.put(mot,new HashMap<String, Float>());
+							
+							freq2.get(mot).put(topics[k], temp);
+					
 					}
 					else
 					{
@@ -236,37 +257,84 @@ public class NaiveBayes {
 						
 						freq2.get(mot).put(topics[k], (freq.get(mot)/taille));
 					
-					}
-				}else{
-					if(!freq2.containsKey(mot))
-						freq2.put(mot,new HashMap<String, Float>());
-					freq2.get(mot).put(topics[k], (freq.get(mot)/taille));
-					
-				}
-
-				}
-		}
-		
-	
-		
-		for(String mot : freq2.keySet()){
+					}//else
+				}// for end
+			}// for end
 			
-			for(int j = 0 ; j<topics.length ; j++){
-
-				if(!probaMot.containsKey(mot)){
-					probaMot.put(mot, new HashMap<String,Float>());
-					probaMot.get(mot).put(topics[j], freq2.get(mot).get(topics[j]));
+	
+						
+				for(String mot : freq2.keySet()){
+					
+					for(int j = 0 ; j<topics.length ; j++){
+		
+						if(!probaMot.containsKey(mot)){
+							probaMot.put(mot, new HashMap<String,Float>());
+							probaMot.get(mot).put(topics[j], freq2.get(mot).get(topics[j]));
+						}else{ 
+							probaMot.get(mot).put(topics[j], freq2.get(mot).get(topics[j]));
+						}
+		
+					}
 				}
-				else { 
-					probaMot.get(mot).put(topics[j], freq2.get(mot).get(topics[j]));
+				if(titre != "")
+				{
+					String[] ttre = titre.split("\\ ");
+					algoNaiveTitre(topics,ttre);
 				}
-
+			}// if(b != "")	
+		}// algoNaive FIN
+	
+	
+		public void algoNaiveTitre(String[] tpc, String[] title){
+			HashMap<String,Map<String,Float>> freq2 = new HashMap<String,Map<String,Float>>();
+			
+			float taille = title.length;
+			
+			for(int i = 0 ; i<taille; i++ )
+			{
+				for(int k = 0 ; k<tpc.length ; k++)
+				{
+					if(probaMot.containsKey(title[i]) && probaMot.get(title[i]).containsKey(tpc[k]))
+					{							
+							float temp = probaMot.get(title[i]).get(tpc[k]);
+							
+							temp = (((1/taille)*(float)1.75)+temp)/2;// Arbitraire : pondération de fréquence pour un mot/topic 
+							
+							if(!freq2.containsKey(title[i]))
+								freq2.put(title[i],new HashMap<String, Float>());
+							
+							freq2.get(title[i]).put(tpc[k], temp);
+					
+					}
+					else
+					{
+						if( !freq2.containsKey(title[i]))
+							freq2.put(title[i],new HashMap<String, Float>());
+						
+						freq2.get(title[i]).put(tpc[k], ((1/taille)*POIDS_TITRE));
+					
+					}//else
+				}// for end
+			}// for end
+			
+	
+						
+				for(String mot : freq2.keySet()){
+					
+					for(int j = 0 ; j<tpc.length ; j++){
+		
+						if(!probaMot.containsKey(mot)){
+							probaMot.put(mot, new HashMap<String,Float>());
+							probaMot.get(mot).put(tpc[j], freq2.get(mot).get(tpc[j]));
+						}else{ 
+							probaMot.get(mot).put(tpc[j], freq2.get(mot).get(tpc[j]));
+						}
+		
+					}
 				}
-			}
 		}
 	
 	
-		
 		/**
 		 * Fonction Association
 		 * Retourne les topics d'un texte fourni en paramètre
@@ -352,17 +420,6 @@ public class NaiveBayes {
 		public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		NaiveBayes nb = new NaiveBayes();
-		//nb.algoNaives("Adeline est gentille. Et Adeline est très très très gentille.","rose poisson");
-		//nb.algoNaives("Martin est gentil. Et Martin est très très très généreux.","rouge poisson");
-		
-		/*for(String mot : nb.probaMot.keySet()){
-			for(String top : nb.probaMot.get(mot).keySet()){
-				System.out.println(mot+" "+top+" "+nb.probaMot.get(mot).get(top));
-				
-			}		
-		}*/
-		
-		//nb.association("gentille Adeline Martin gentil");
 		float ratio = nb.calcule();
 	}
 }
