@@ -110,10 +110,11 @@ public class Classify {
 	    if (tree.guessGoalAttribute(testItem).
 		equals(testItem.valueOf(0))){
 	    	ratio++;	
-	    	System.out.println("Trouvé ! Topic réel : "+testItem.valueOf(0)+" Topic deviné : "+tree.guessGoalAttribute(testItem));
+	    	System.out.println("Trouvé ! Topic réel : "+testItem.valueOf(0)+" \t\tTopic deviné : "+tree.guessGoalAttribute(testItem));
+	    	//System.out.println(testItem.valueOf(testItem.toArray().length-1));
 	    }
 	    else {
-	    	System.out.println("Non trouvé ! Topic réel : "+testItem.valueOf(0)+" Topic deviné : "+tree.guessGoalAttribute(testItem));
+	    	System.out.println("Non trouvé ! Topic réel : "+testItem.valueOf(0)+" \t\tTopic deviné : "+tree.guessGoalAttribute(testItem));
 	    }
 	    	    
 	    nbTests++;

@@ -194,7 +194,6 @@ foreach (@liste_test) {
 
 	#open(WORD,">listemots.txt") or die();
 
-
 	#Première ligne, nom de la database
 	print SORTIE $nom."\n";
 
@@ -218,12 +217,6 @@ foreach (@liste_test) {
 		{
 			@liste_topics = $reuters->{TOPICS}->{D};
 		}
-	  #if($reuters->{NEWID} == 14088){
-	#	print"\n\nid";
-	#	print Dumper @liste_topics;
-	#	print scalar(@liste_topics);
-	#	print "id\n\n ";
-	#	}
 
 		if(defined($liste_topics[0])){
 			foreach my $topic ( @liste_topics ) {

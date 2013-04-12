@@ -211,9 +211,6 @@ foreach (@liste_test) {
 	  my @liste_topics;
 	  my $reutersbody = purification($reuters->{TEXT}->{BODY});
 
-use Data::Dumper;
-#print Dumper  @{ $reuters->{TOPICS}->{D} };
-
 		if(is_array($reuters->{TOPICS}->{D})) {
 			@liste_topics =  @{ $reuters->{TOPICS}->{D} };
 		}

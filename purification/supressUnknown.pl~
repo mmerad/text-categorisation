@@ -1,6 +1,8 @@
 #!/usr/bin/perl -w
 
-my @liste_sgm = <*train.sgm>;
+#Ce script sert à supprimer des caractères inutiles qui sont oncompatibles avec notre librairie de decisionTree
+
+my @liste_sgm = <*test.sgm>;
 
 print @liste_sgm;
 
