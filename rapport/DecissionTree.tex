@@ -1,1 +1,134 @@
 \subsection{Arbres de decission}
+
+\paragraph{}
+Nous avons décidé d'utiliser comme second algorithme celui des arbres de décisions. Cet algorithme, bien que très complexe à mettre en place, nous permet d'obtenir des résultats faciles à interpréter et en très visuelles.
+Vu la difficulté d'implémentation de cet algorithme nous en avons donc chercher un déjà réaliser pour le comprendre et l'utiliser avec nos fichiers de tests. C'est pourquoi nous utilisons l'algorithme jaDTi un algorithme en Java qui implémente les arbres de décisions, et, qui est libre et disponible sur Internet (General Public License) sur http://www.run.montefiore.ulg.ac.be/~francois/software/jaDTi/. 
+
+
+\subsubsection{Le principe} 
+\paragraph{}
+Les arbres de décisions, dans notre cas, permettent de représenter visuellement les différentes classes obtenues sous forme d'un arbre. Ces classes obtenus représentent nos différents "topics" et apparaissent donc au niveau des noeuds, et les décisions de classifications en fonctions des mots trouvés restent visibles en parcourant la branche concernée.
+
+Ici l'algorithme d'apprentissage nous permet d'obtenir un arbre qui contient 
+
+
+/* Dans les domaines de l'aide à la décision (informatique décisionnelle et entrepôt de données) et de l'exploration de données, certains algorithmes produisent des arbres de décision, utilisés pour répartir une population d'individus (de clients par exemple) en groupes homogènes, selon un ensemble de variables discriminantes (l'âge, la catégorie socio-professionnelle, …) en fonction d'un objectif fixé et connu (chiffres d'affaires, réponse à un mailing, …). À ce titre, cette technique fait partie des méthodes d’apprentissage supervisé. Il s’agit de prédire avec le plus de précision possible les valeurs prises par la variable à prédire (objectif, variable cible, variable d’intérêt, attribut classe, variable de sortie, …) à partir d’un ensemble de descripteurs (variables prédictives, variables discriminantes, variables d'entrées, …).
+
+Cette technique est autant populaire en statistique qu’en apprentissage automatique. Son succès réside en grande partie à ses caractéristiques :
+
+    lisibilité du modèle de prédiction, l’arbre de décision, fourni. Cette caractéristique est très importante, car le travail de l'analyste consiste aussi à faire comprendre ses résultats afin d’emporter l’adhésion des décideurs.
+    capacité à sélectionner automatiquement les variables discriminantes dans un fichier de données contenant un très grand nombre de variables potentiellement intéressantes. En ce sens, un arbre de décision constitue une technique exploratoire privilégiée pour appréhender de gros fichiers de données.
+*/
+
+
+/*  Construction d'un arbre de décision
+
+Pour construire un arbre de décision, nous devons répondre aux quatre questions suivantes :
+
+    Comment choisir, parmi l’ensemble des variables disponibles, la variable de segmentation d’un sommet ?
+    Lorsque la variable est continue, c’est le cas de la variable Humidité, comment déterminer le seuil de coupure lors de la segmentation (la valeur 77.5 dans l’arbre de décision ci-dessus) ?
+    Comment déterminer la bonne taille de l’arbre ? Est-il souhaitable de produire absolument des feuilles pures selon la variable à prédire, même si le groupe correspondant correspond à une fraction très faible des observations ?
+    Enfin, comment affecter la valeur de la variable à prédire dans les feuilles ? Lorsque le groupe est pur la réponse est évidente, dans le cas contraire, nous verrons qu'il nous faut adopter une stratégie.
+
+Critère de segmentation
+
+Pour choisir la variable de segmentation sur un sommet, l’algorithme s’appuie sur une technique très fruste : il teste toutes les variables potentielles et choisit celle qui maximise un critère donné. Il faut donc que le critère utilisé caractérise la pureté (ou le gain en pureté) lors du passage du sommet à segmenter vers les feuilles produites par la segmentation. Il existe un grand nombre de critères informationnels ou statistiques, les plus utilisés sont l’entropie de Shannon et le coefficient de Gini et leurs variantes.
+
+Une autre manière de caractériser la segmentation est de mesurer le lien ou la causalité entre la variable candidate et la variable à prédire. Dans ce cas, le critère le plus utilisé est le lien du KHI-2 et ses dérivés.
+
+Certains critères permettent de prendre en compte la nature ordinale de la cible, et ce, en utilisant des mesures ou des heuristiques1 appropriées.
+
+Au final, ces critères, pour peu qu’ils permettent de faire tendre le partitionnement vers la constitution de groupes purs, jouent peu sur les performances des algorithmes.
+
+Chaque valeur de la variable de segmentation permet de produire une feuille (cf. 3 valeurs d’ensoleillement produit 3 sommets), c’est le cas de l’algorithme C4.5 par exemple. Les algorithmes d’apprentissage peuvent différer sur ce point. Certains tels que CART produisent systématiquement des arbres binaires, il cherche donc lors de la segmentation le regroupement binaire qui optimise le critère de segmentation. D’autres tels que CHAID cherchent à effectuer les regroupements les plus pertinents en s’appuyant sur des critères statistiques. Selon la technique, nous obtiendrons des arbres plus ou moins larges, l’idée est d’éviter de fractionner exagérément les données afin de ne pas produire des groupes d’effectifs trop faibles, ne correspondant à aucune réalité statistique.
+Traitement des variables continues
+
+Le traitement des variables continues doit être en accord avec l’utilisation du critère de segmentation. Dans la grande majorité des cas, le principe de segmentation des variables continues est très simple : trier les données selon la variable à traiter, tester tous les points de coupure possibles situés entre deux points successifs et évaluer la valeur du critère dans chaque cas. Le point de coupure optimal correspond tout simplement à celui qui maximise le critère de segmentation.
+
+Dans notre exemple, l’algorithme a donc évalué les points de coupure situés à mi-distance des observations 1 à 5 correspondants aux valeurs {70, 75, 80, 85, 95} de Humidité.
+Définir la bonne taille de l’arbre
+
+L’objectif étant de produire des groupes homogènes, il paraît naturel de fixer comme règle d’arrêt de construction de l’arbre la constitution de groupes purs du point de vue de la variable à prédire. C’est le cas dans notre exemple ci-dessus, aucune des feuilles de l’arbre ne comporte de contre-exemples. Souhaitable en théorie, cette attitude n’est pas tenable dans la pratique.
+
+En effet, nous travaillons souvent sur un échantillon que l'on espère représentatif d’une population. Tout l’enjeu est donc de trouver la bonne mesure entre capter l’information utile, correspondant réellement à une relation dans la population, et ingérer les spécificités du fichier sur lequel nous sommes en train de travailler (l'échantillon dit d'apprentissage), correspondant en fait à un artefact statistique. Autrement dit, il ne faut jamais oublier que la performance de l'arbre est évaluée sur les données mêmes qui ont servi à sa construction : plus le modèle est complexe (plus l'arbre est grand, plus il a de branches, plus il a de feuilles), plus l'on court le risque de voir ce modèle incapable d'être extrapolé à de nouvelles données, c'est-à-dire de rendre compte de la réalité que nous essayons justement d'appréhender. À la limite, et c'est particulièrement vrai des arbres de décision, un modèle est capable de répliquer exactement n'importe quel échantillon de données, sans pour autant appréhender une quelconque réalité… En effet, si dans un cas extrême on décide de faire pousser notre arbre le plus loin possible, nous pouvons obtenir un arbre composé d'autant de feuilles que d'individus dans l'échantillon d'apprentissage. Notre arbre ne commet alors aucune erreur sur cet échantillon puisqu'il en épouse toutes les caractéristiques : performance égale à 100 %. Dès lors que l'on applique ce modèle sur de nouvelles données qui par nature n'ont pas toutes les caractéristiques de notre échantillon d'apprentissage (il s'agit simplement d'un autre échantillon) sa performance va donc se dégrader pour à la limite se rapprocher de 0 %…!
+
+Ainsi, lorsque l'on construit un arbre de décision, on risque ce que l'on appelle un surajustement du modèle : le modèle semble performant (son erreur moyenne est très faible) mais il ne l'est en réalité pas du tout ! Il va nous falloir trouver l'arbre le plus petit possible ayant la plus grande performance possible. Plus un arbre est petit et plus il sera stable dans ses prévisions futures (en statistiques, le principe de parcimonie prévaut presque toujours) ; plus un arbre est performant, plus il est satisfaisant pour l'analyste. Il ne sert à rien de générer un modèle de très bonne qualité, si cette qualité n’est pas constante et se dégrade lorsque l’on applique ce modèle sur un nouvel ensemble de données.
+
+Autrement dit, pour éviter un sur-ajustement de nos arbres (et c'est également vrai de tous les modèles mathématiques que l'on pourrait construire), il convient d'appliquer un principe de parcimonie et de réaliser des arbitrages performance/complexité des modèles utilisés. À performance comparable, on préfèrera toujours le modèle le plus simple, si l'on souhaite pouvoir utiliser ce modèle sur de nouvelles données totalement inconnues.
+*/
+
+
+/*
+L’algorithme d’apprentissage cherche à produire des groupes d’individus le plus homogène possible du point de vue de la variable à prédire à partir des variables de météo. Le partitionnement est décrit à l’aide d’un arbre de décision.
+
+Arbre de décision sur les données Weather
+
+Sur chaque sommet de l’arbre est décrite la distribution de la variable à prédire. Dans le cas du premier sommet, la racine de l’arbre, nous constatons qu’il y a 14 observations dans notre fichier, 9 d’entre eux ont décidé de jouer (Jouer = oui), 5 ont décidé le contraire (Jouer = non).
+
+Ce premier sommet est segmenté à l’aide de la variable Ensoleillement, 3 sous-groupes ont été produits. Le premier groupe à gauche (Ensoleillement = Soleil) comporte 5 observations, 2 d’entre eux correspondent à Jouer = oui, 3 à Jouer = non.
+
+Chaque sommet est ainsi itérativement traité jusqu’à ce que l’on obtienne des groupes suffisamment homogènes. Elles correspondent aux feuilles de l’arbre, des sommets qui ne sont plus segmentés.
+
+La lecture d’un arbre de décision est très intuitive, c’est ce qui fait son succès. L’arbre peut être traduit en base de règles sans pertes d’informations. Si l’on considère la feuille la plus à gauche, nous pouvons aisément lire la règle d’affectation suivante : « Si ensoleillement = soleil et humidité < 77,5 % alors jouer = oui ».*/
+
+
+
+/*
+ Les différents algorithmes envisageables
+
+À partir de ces 4 points, il existe un très grand nombre de variantes. Certaines mettent l’accent sur tel ou tel aspect de l’algorithme de construction, mais il n’existe pas de méthode qui soit dans la pratique systématiquement plus performante. Voici une liste non exhaustive des algorithmes classiquement utilisés :
+
+    ID3
+    CHAID
+    CART
+    C4.5
+    C5
+    SLIQ
+    Exhaustive CHAID
+    QUEST
+    VFDT
+    UFFT
+    …
+
+Ces algorithmes se distinguent par le ou les critères de segmentation utilisés, par les méthodes d'élagages implémentées… mais aussi par leur manière de gérer les données manquantes dans nos prédicteurs. Ce point prend toute son importance dans la pratique. En effet, les données à disposition en entreprise par exemple sont quasi systématiquement incomplètes. Que faire en présence de données manquantes ?
+
+    Les « ignorer » : cela n'est possible que si l'échantillon de données est suffisamment grand pour supprimer des individus (des lignes de la base de données), et que si l'on est sûr que lorsque l'arbre de décision sera utilisé en pratique (lorsqu'il sera déployé), toutes les données seront toujours disponibles pour tous les individus.
+    Les « remplacer par une valeur calculée jugée adéquate (on parle d'imputation de valeurs manquantes) : cette technique est parfois utilisée dans le monde de la statistique mais au-delà des problèmes purement mathématiques qu'elle peut poser elle se heurte à une pierre d'achoppement méthodologique.
+    Utiliser des « variables subsituts » : cela consiste, pour un individu qui aurait une donnée manquante pour une variable sélectionnée par l'arbre comme étant discriminante, à utiliser la variable qui parmi l'ensemble des variables disponibles dans la base de données produit localement les feuilles les plus similaires aux feuilles produites par la variable dont la donnée est manquante. Cette variable s'appelle un substitut. Si un individu a une valeur manquante pour la variable initiale, mais aussi pour la variable substitut, on peut utiliser une deuxième variable substitut. Et ainsi de suite, jusqu'à la limite d'un critère de qualité du substitut. Cette technique a l'avantage d'exploiter l'ensemble de l'information disponible (cela est donc très utile lorsque cette information est complexe à récupérer mais est malheureusement incomplète) pour chaque individu.
+
+Les arbres ont connu un net regain d’intérêt lorsque les méthodes d’agrégation des classifieurs tels que le boosting ou le bagging ont été développées et popularisées dans la communauté de l’apprentissage automatique. Certaines des caractéristiques des arbres, notamment leur variabilité très marquée, leur permettent de tirer parti des avantages de la combinaison des prédicteurs. Des techniques spécifiques ont même été développées pour produire des arbres individuellement peu efficaces, mais lorsqu’elles sont combinées, s’avèrent très performantes, c’est le cas notamment des (forêts d'arbres aléatoires) de Breiman.
+
+Dans des processus de data mining les arbres de décision sont parfois combinés à des techniques plus classiques de modélisation d'un objectif fixé : analyse discriminante, régressions logistiques (régression logistique), régressions linéaires (régression linéaire), réseaux de neurones (perceptrons multicouches, radial basis function network…)… Ils sont également très souvent combinés entre eux pour tirer profit de leurs avantages respectifs. Des procédures d'agrégation des performances des différents modèles utilisés, parfois appelées procédures de vote, sont alors mises en place pour obtenir une performance maximale, tout en contrôlant et en minimisant le niveau de complexité de l'ensemble des modèles utilisés.
+
+
+
+
+
+
+L’algorithme C4.5 est un algorithme de classification supervisé, publié par Ross Quinlan. Il est basé sur l'algorithme ID3 auquel il apporte plusieurs améliorations.
+C4.5
+
+À partir d'un échantillon d'apprentissage composé d'une variable objectif ou variable prédite Y et d'au moins une variable d'apprentissage ou variables prédictives \{x_1,x_2,\ldots,x_n\}=X, C4.5 produit un modèle de type arbre de décision. Ce modèle permet de prédire pour un individu i la valeur estimé \hat{y_{i}} de la variable objectif en fonction des valeurs prise par les variables "prédictives" x_i. L'algorithme C4.5 se base sur une mesure de l'entropie dans l'échantillon d'apprentissage pour produire le modèle (graphe d'induction). L'avantage du recours à l'entropie est que l'algorithme travaille sur des données symboliques que ce soient des variables catégorielles (comme des couleurs) ou numériques discrètes (par exemple x_{i}\in \mathbb{N}). Le désavantage de la méthode est que pour préserver l'efficacité de l'apprentissage et la pertinence du modèle produit, les variables continues doivent être discrétisées avant la mise en œuvre de l'algorithme.*/
+
+
+
+\subsubsection{Utilisation de l'algorithme}
+\paragraph{Mise en forme des données}  
+Dans un premier temps, pour pouvoir utiliser cet algorithme, nous avons du mettre nos données sous la forme suivante :
+
+object name "TOPICS" symbolic "TOPICS" symbolic ... 
+"id de l'article" yes no ... "mots1"
+"id de l'article" no yes ... "mots2"
+"id de l'article" no no ... "mots3"
+
+Tous les mots (raciniser et avec les mots inutiles supprimés) sont ajoutés (yes/no) aux différentes classes (tous les différents"TOPICS") en fonction de si ils apparaissent ou non dans ce topic.
+La première ligne de ce fichier contient donc tous les topics présents avec leurs types (ici ils sont tous symbolic). Et les lignes suivantes contiennent pour chaque mots de chaque article s'il apparait ou non dans les topics correspondants.
+Nous obtenons ce fichier à l'aide d'un script Perl que nous avons écris. Ce fichier, au vu du nombre important d'articles dans notre jeu de données est très volumineux. Nous obtenons donc notre fichier de données d'entrainement pour pouvoir utiliser l'algorithme d'arbre de décision. 
+
+\paragraph{Modification de l'algoritme}  
+Nous n'avons pas eu besoin de faire d'imporantes mofifications pour utiliser cette algorithme. En effet, nous avons seulment modifié et ajouté quelques lignes de code pour améliorer l'affichage de sortie et permettre de visualiser plus facilement les résultats.
+
+\paragraph{Affichage des résultats}
+Dans l'algorithme une classe est disponible "DecisionTreeToDot" pour permettre de générer un fichier .dot qui représente l'arbre obtenus. Nous pouvons ensuite visualiser cet arbre grace à "graphviz"
+Voici donc l'arbre que nous obtenons :
+
