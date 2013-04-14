@@ -1,13 +1,13 @@
 \subsection{Arbres de decission}
 
 \paragraph{}
-Nous avons décidé d'utiliser comme second algorithme celui des arbres de décisions. Cet algorithme, bien que très complexe à mettre en place, nous permet d'obtenir des résultats faciles à interpréter et en très visuelles.
-Vu la difficulté d'implémentation de cet algorithme nous en avons donc chercher un déjà réaliser pour le comprendre et l'utiliser avec nos fichiers de tests. C'est pourquoi nous utilisons l'algorithme jaDTi un algorithme en Java qui implémente les arbres de décisions, et, qui est libre et disponible sur Internet (General Public License) sur http://www.run.montefiore.ulg.ac.be/~francois/software/jaDTi/. 
+Nous avons décidé d'utiliser comme second algorithme celui des arbres de décisions. Cet algorithme, bien que très complexe à mettre en place, nous permet d'obtenir des résultats faciles à interpréter et très visuels.
+Vu la difficulté d'implémentation de cet algorithme nous en avons donc chercher un déjà réalisé pour le comprendre et l'utiliser avec nos fichiers. C'est pourquoi nous utilisons l'algorithme jaDTi un algorithme en Java qui implémente les arbres de décisions, et, qui est libre et disponible sur Internet (General Public License) sur http://www.run.montefiore.ulg.ac.be/~francois/software/jaDTi/. 
 
 
 \subsubsection{Le principe} 
 \paragraph{}
-Les arbres de décisions, dans notre cas, permettent de représenter visuellement les différentes classes obtenues sous forme d'un arbre. Ces classes obtenus représentent nos différents "topics" et apparaissent donc au niveau des noeuds, et les décisions de classifications en fonctions des mots trouvés restent visibles en parcourant la branche concernée.
+Les arbres de décisions, dans notre cas, permettent de représenter visuellement les différentes classes obtenues sous forme d'un arbre. Ces classes obtenus représentent nos différents "topics" et apparaissent donc au niveau des feuilles, et les décisions de classifications en fonctions des mots trouvés restent visibles en parcourant la branche concernée.
 
 Ici l'algorithme d'apprentissage nous permet d'obtenir un arbre qui contient 
 
@@ -108,7 +108,7 @@ Dans des processus de data mining les arbres de décision sont parfois combinés
 L’algorithme C4.5 est un algorithme de classification supervisé, publié par Ross Quinlan. Il est basé sur l'algorithme ID3 auquel il apporte plusieurs améliorations.
 C4.5
 
-À partir d'un échantillon d'apprentissage composé d'une variable objectif ou variable prédite Y et d'au moins une variable d'apprentissage ou variables prédictives \{x_1,x_2,\ldots,x_n\}=X, C4.5 produit un modèle de type arbre de décision. Ce modèle permet de prédire pour un individu i la valeur estimé \hat{y_{i}} de la variable objectif en fonction des valeurs prise par les variables "prédictives" x_i. L'algorithme C4.5 se base sur une mesure de l'entropie dans l'échantillon d'apprentissage pour produire le modèle (graphe d'induction). L'avantage du recours à l'entropie est que l'algorithme travaille sur des données symboliques que ce soient des variables catégorielles (comme des couleurs) ou numériques discrètes (par exemple x_{i}\in \mathbb{N}). Le désavantage de la méthode est que pour préserver l'efficacité de l'apprentissage et la pertinence du modèle produit, les variables continues doivent être discrétisées avant la mise en œuvre de l'algorithme.*/
+% À partir d'un échantillon d'apprentissage composé d'une variable objectif ou variable prédite Y et d'au moins une variable d'apprentissage ou variables prédictives \{x_1,x_2,\ldots,x_n\}=X, C4.5 produit un modèle de type arbre de décision. Ce modèle permet de prédire pour un individu i la valeur estimé \hat{y_{i}} de la variable objectif en fonction des valeurs prise par les variables "prédictives" x_i. L'algorithme C4.5 se base sur une mesure de l'entropie dans l'échantillon d'apprentissage pour produire le modèle (graphe d'induction). L'avantage du recours à l'entropie est que l'algorithme travaille sur des données symboliques que ce soient des variables catégorielles (comme des couleurs) ou numériques discrètes (par exemple x_{i}\in \mathbb{N}). Le désavantage de la méthode est que pour préserver l'efficacité de l'apprentissage et la pertinence du modèle produit, les variables continues doivent être discrétisées avant la mise en œuvre de l'algorithme.*/
 
 
 
@@ -129,6 +129,6 @@ Nous obtenons ce fichier à l'aide d'un script Perl que nous avons écris. Ce fi
 Nous n'avons pas eu besoin de faire d'imporantes mofifications pour utiliser cette algorithme. En effet, nous avons seulment modifié et ajouté quelques lignes de code pour améliorer l'affichage de sortie et permettre de visualiser plus facilement les résultats.
 
 \paragraph{Affichage des résultats}
-Dans l'algorithme une classe est disponible "DecisionTreeToDot" pour permettre de générer un fichier .dot qui représente l'arbre obtenus. Nous pouvons ensuite visualiser cet arbre grace à "graphviz"
+Dans l'algorithme une classe est disponible "DecisionTreeToDot" pour permettre de générer un fichier .dot qui représente l'arbre obtenu. Nous pouvons ensuite visualiser cet arbre grace à "graphviz"
 Voici donc l'arbre que nous obtenons :
 
