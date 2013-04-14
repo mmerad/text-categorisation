@@ -86,21 +86,21 @@ Notre script parcourt l'ensemble des fichiers Reuters (.sgm) et analyse le fichi
 
 \subsubsection{Suppression des caractères inutiles}
 \paragraph{}
-L'ensemble des caractères inutiles (et perturbateurs pour la catégorisation) est supprimé via des expressions  Perl.
+L'ensemble des caractères inutiles (et perturbateurs pour la catégorisation) est supprimé via des expressions Perl.
 ~~\\
 \begin{minted}[linenos,
                samepage,
                numbersep=5pt,
                gobble=0,
                frame=single,
-               label=Exemple d'expression reguliere,
+               label=Exemple d'expression Perl,
                framesep=2mm]{perl}
 
 $ligne =~ s/@/ /g;
 \end{minted}
 ~~\\
 \paragraph{}
-L'exemple ci-dessus supprime toutes les occurrences du caractère arobase dans la ligne de texte donnée et les remplace par des espaces. On applique ce type d'expression régulière pour tous les caractères spéciaux courants.
+L'exemple ci-dessus supprime toutes les occurrences du caractère arobase dans la ligne de texte donnée et les remplace par des espaces. On applique ce type d'expression régulière pour tous les caractères spéciaux courants\\(\verb.°%_&:"'@#~=*^|£€$;!?<>(){}[]+-,\/.).
 
 \subsubsection{Racinisation}
 \paragraph{}
