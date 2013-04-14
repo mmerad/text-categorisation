@@ -1,14 +1,17 @@
 \section{Épuration des données}
-Mettre une intro ici
+Avant de pouvoir séparer en plusieurs catégories nos textes, il convient d'analyser l'ensemble des articles à notre disposition. L'ensemble Reuters est composé de 21 578 articles de presses datés entre février et octobre 1987. Nous allons donc catégoriser ces textes.
 \subsection{Ensemble de tests}
-Premièrement, nous devions, à partir des données, créer deux ensemble : Un ensemble d'entraînement et un ensemble de test. Il est important d'évaluer la catégorisation trouvée sur un ensemble différent de celui d'apprentissage pour ...
+Premièrement, nous devions, à partir des données, créer deux ensemble : Un ensemble d'entraînement et un ensemble de test. Il est important d'évaluer la catégorisation trouvée sur un ensemble différent de celui d'apprentissage pour confirmer l'efficacité réelle de l'apprentissage.
 
 Trois séparations  nous étaient proposé avec le corpus de textes: Lewissplit non modifié, ModApteSplit, et le ModHayes Split.
 Comme indiqué dans le fichier \textsc{README}, nous avons préféré leModApteSplit (The Modified Apte), qui semble meilleur pour la catégorisation sur les balises \textit{TOPICS}.
 
 Après cette séparation, nous obtenons les ensembles suivants : 
 \begin{itemize}
-\item Ensemble d'entrainement (9,603 documents): LEWISSPLIT="TRAIN";  TOPICS="YES"
-\item Ensemble de test (3,299 documents): LEWISSPLIT="TEST"; TOPICS="YES"
-\item Non-utilisés (8,676 documentss):   LEWISSPLIT="NOT-USED"; TOPICS="YES" or TOPICS="NO"  or TOPICS="BYPASS"
+\item Ensemble d'entrainement (9,603 documents) : LEWISSPLIT="TRAIN";
+ TOPICS="YES"
+\item Ensemble de test (3,299 documents) : LEWISSPLIT="TEST";
+TOPICS="YES"
+\item Non-utilisés (8,676 documentss) :   LEWISSPLIT="NOT-USED";
+TOPICS="YES" or TOPICS="NO"  or TOPICS="BYPASS"
 \end{itemize}
