@@ -38,7 +38,7 @@ Nous avons choisi de présenter nos résultats sous forme de tableau (voir la fi
 \end{center}
 
 \paragraph{}
-On a également fait un test en utilisant les données de tests comme données d'apprentissage après que ces données aient été testés. Donc il existe de phase d'apprentissage. La première avec le jeu de données d'apprentissage et la seconde phase qui est plutôt une phase d'apprentissage continue.
+On a également fait un test en utilisant les données de tests comme données d'apprentissage après que ces données aient été testés. Donc il existe deux phases d'apprentissage. La première avec le jeu de données d'apprentissage et la seconde phase qui est plutôt une phase d'apprentissage continue.
 \newline
 
 \begin{center}
@@ -62,11 +62,11 @@ On a également fait un test en utilisant les données de tests comme données d
 
 
 \paragraph{}
-Les résultats nous semblent relativement étonnant car nous avons de meilleur résultat lorsque les données ne sont pas purifiées et que le poids du titre est relativement faible. En effet, en utilisant l'algorithme Naives Bayes, nous pensions qu'en mettant plus d'importance sur le poids des mots du titre, la probabilité d'obtenir le topic en connaissant le mot serait plus importante et augmenterait notre taux de réussite. Mais nos résultats vont à l'encontre de notre logique. Puisque avec une pondération de 3 sur le titre, nous obtenons 2\% de moins de réussite avec des données purifiées et 3\% de moins sans purification au préalable. Par rapport au temps d'exécution qui est d'environ 8 secondes, les différentes configurations ne changent pratiquement rien. 
+Les résultats nous semblent relativement étonnant car nous avons de meilleur résultat lorsque les données ne sont pas purifiées et que le poids du titre est relativement faible. En effet, en utilisant l'algorithme Naives Bayes, nous pensions qu'en mettant plus d'importance sur le poids des mots du titre, la probabilité d'obtenir le topic en connaissant le mot serait plus importante et augmenterait notre taux de réussite. Mais nos résultats vont à l'encontre de notre logique. Puisque avec une pondération de 3 sur le titre, nous obtenons 2\% de moins de réussite avec des données purifiées et 3\% de moins sans purification au préalable. Par rapport au temps d'exécution qui est d'environ 8 secondes, les différentes configurations ne changent pratiquement rien. Les mots du titre ne sont donc pas corrélé aussi fortement que prévu avec les topics de nos textes.
 \paragraph{}
-Au niveau de l'apprentissage, on remarque que les résultats sont égals ou meilleurs sans cet apprentissage continu. Avec ce dernier, le système apprend par coeur, ce qui diminue grandement le pourcentage de réussite.
+Au niveau de l'apprentissage, on remarque que les résultats sont égal ou meilleurs sans cet apprentissage continu. Avec ce dernier, le système apprend par cœur, ce qui diminue grandement le pourcentage de réussite.
 
 \paragraph{}
-De plus, nous avons réalisé une version interprété de l'algorithme de bayes. En effet, nous n'avons pas prit en compte la probabilité d'un topic parmi la liste qui nous est fourni. Ainsi que la probabilité d'avoir une certaine suite de mot associé à un topic. Peut être qu'avec ces deux améliorations nous aurions pu augmenter notre pourcentage de réussite.  
+De plus, nous avons réalisé une version simplifié de l'algorithme de bayes. En effet, nous n'avons pas prit en compte la probabilité d'un topic parmi la liste qui nous est fourni. Ainsi que la probabilité d'avoir une certaine suite de mot associé à un topic. Peut être qu'avec ces deux améliorations nous aurions pu augmenter notre pourcentage de réussite.  
 
 
