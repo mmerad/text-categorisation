@@ -1,1 +1,72 @@
 \subsection{Résultat du Naives Bayes}
+\paragraph{}
+Durant le phase de test de notre algorithme NaivesBayes, nous avons utilisé plusieurs configurations :
+\begin{itemize}
+\item Données d'entrainement et de test purifiées ou brutes (utilisation ou non de stemmer)
+\item Différentes pondérations des relations entre les titres des articles et des sujets
+\end{itemize}
+
+\paragraph{}
+Nous avons choisi de présenter nos résultats sous forme de tableau (voir la figure \ref{donnees}) pour pouvoir faciliter la compréhension et l'analyse.
+\newline
+
+\begin{center}
+
+
+\begin {tabular}{|c|c|c|}
+\hline
+ & \textbf{Poids titre} & \textbf{Résultat obtenu} \\
+\hline
+\multirow{4}*{\textbf{Données purifiées}} & 3 & 19\% de succès \\
+\cline{2-3}
+& 1.75 & 21\% de succès \\
+\cline{2-3}
+ & 0.5 & 21\% de succès \\
+\cline{2-3} 
+& aucun & 21\% de succès \\
+\hline
+\multirow{4}*{\textbf{Données sans purification}} & 3 & 28\% de succès \\
+\cline{2-3}
+& 1.75 & 31\% de succès \\
+\cline{2-3}
+ & 0.5 & 31\% de succès \\
+\cline{2-3} 
+& aucun & 31\% de succès \\
+\hline
+\end{tabular}
+\label{donnees}
+\end{center}
+
+\paragraph{}
+On a également fait un test en utilisant les données de tests comme données d'apprentissage après que ces données aient été testés. Donc il existe de phase d'apprentissage. La première avec le jeu de données d'apprentissage et la seconde phase qui est plutôt une phase d'apprentissage continue.
+\newline
+
+\begin{center}
+
+\begin {tabular}{|c|c|c|}
+\hline
+ & \textbf{Stemmer} & \textbf{Résultat obtenu} \\
+\hline
+\multirow{2}*{\textbf{Avec apprentissage continu}} & Avec & 21\% de succès \\
+\cline{2-3}
+& Sans & 21\% de succès \\
+\hline
+\multirow{2}*{\textbf{Sans apprentissage continu}} & Avec & 31\% de succès \\
+\cline{2-3}
+& Sans & 44\% de succès \\
+\hline
+\end{tabular}
+\label{donnees}
+\end{center}
+
+
+
+\paragraph{}
+Les résultats nous semblent relativement étonnant car nous avons de meilleur résultat lorsque les données ne sont pas purifiées et que le poids du titre est relativement faible. En effet, en utilisant l'algorithme Naives Bayes, nous pensions qu'en mettant plus d'importance sur le poids des mots du titre, la probabilité d'obtenir le topic en connaissant le mot serait plus importante et augmenterait notre taux de réussite. Mais nos résultats vont à l'encontre de notre logique. Puisque avec une pondération de 3 sur le titre, nous obtenons 2\% de moins de réussite avec des données purifiées et 3\% de moins sans purification au préalable. Par rapport au temps d'exécution qui est d'environ 8 secondes, les différentes configurations ne changent pratiquement rien. 
+\paragraph{}
+Au niveau de l'apprentissage, on remarque que les résultats sont égals ou meilleurs sans cet apprentissage continu. Avec ce dernier, le système apprend par coeur, ce qui diminue grandement le pourcentage de réussite.
+
+\paragraph{}
+De plus, nous avons réalisé une version interprété de l'algorithme de bayes. En effet, nous n'avons pas prit en compte la probabilité d'un topic parmi la liste qui nous est fourni. Ainsi que la probabilité d'avoir une certaine suite de mot associé à un topic. Peut être qu'avec ces deux améliorations nous aurions pu augmenter notre pourcentage de réussite.  
+
+
