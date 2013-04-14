@@ -5,7 +5,8 @@ Les articles que nous souhaitons catégoriser nous sont fournis sous forme de fi
 
 \lstset{language=XML}
 \begin{lstlisting}
-<REUTERS TOPICS="NO" LEWISSPLIT="TRAIN" CGISPLIT="TRAINING-SET" OLDID="5545" NEWID="2">
+<REUTERS TOPICS="NO" LEWISSPLIT="TRAIN" CGISPLIT="TRAINING-SET"
+ OLDID="5545" NEWID="2">
 <DATE>26-FEB-1987 15:02:20.00</DATE>
 <TOPICS></TOPICS>
 <PLACES><D>usa</D></PLACES>
@@ -19,7 +20,8 @@ Les articles que nous souhaitons catégoriser nous sont fournis sous forme de fi
 d f BC-STANDARD-OIL-&lt;SRD>-TO   02-26 0082</UNKNOWN>
 <TEXT>&#2;
 <TITLE>STANDARD OIL &lt;SRD> TO FORM FINANCIAL UNIT</TITLE>
-<DATELINE>    CLEVELAND, Feb 26 - </DATELINE><BODY>Standard Oil Co and BP North America
+<DATELINE>    CLEVELAND, Feb 26 - </DATELINE><BODY>Standard 
+Oil Co and BP North America
 Inc said they plan to form a venture to manage the money market
 borrowing and investment activities of both companies.
     BP North America is a subsidiary of British Petroleum Co
@@ -35,7 +37,8 @@ joint management committee.
 
 \lstset{language=XML}
 \begin{lstlisting}
-<REUTERS TOPICS="NO" LEWISSPLIT="TRAIN" CGISPLIT="TRAINING-SET" OLDID="5545" NEWID="2">
+<REUTERS TOPICS="NO" LEWISSPLIT="TRAIN" 
+CGISPLIT="TRAINING-SET" OLDID="5545" NEWID="2">
 <DATE>26-FEB-1987 15:02:20.00</DATE>
 <TOPICS></TOPICS>
 <PLACES><D>usa</D></PLACES>
@@ -49,7 +52,8 @@ joint management committee.
  bc standard oil srd 02 26 0082</UNKNOWN>
 <TEXT>2;
 <TITLE>standard oil srd form financi unit</TITLE>
-<DATELINE> cleveland feb 26</DATELINE><BODY>standard oil co bp north america
+<DATELINE> cleveland feb 26</DATELINE><BODY>standard
+ oil co bp north america
 inc plan form ventur manag monei market
 borrow invest activ both companies.
  bp north america subsidiari british petroleum co
@@ -69,7 +73,7 @@ Notre script parcourt l'ensemble des fichiers Reuters (.sgm) et analyse le fichi
 
 \subsubsection{Suppression des caractères inutiles}
 \paragraph{}
-L'ensemble des caractères inutiles (et perturbateurs pour la catégorisation) est supprimé via des expressions regulières Perl.
+L'ensemble des caractères inutiles (et perturbateurs pour la catégorisation) est supprimé via des expressions  Perl.
 
 \lstset{language=Perl}
 \begin{lstlisting}
@@ -77,7 +81,7 @@ $ligne =~ s/@/ /g;
 \end{lstlisting}
 
 \paragraph{}
-L'exemple ci-dessus supprime toutes les occurrences du caractère arobase dans la ligne de texte donnée et les remplace par des espaces. On applique ce type d'expression régulière pour tous les caractères spéciaux courants (\verb.°%_&:"'@#~=*^|£€$;!?<>(){}[]+-,\/.).
+L'exemple ci-dessus supprime toutes les occurrences du caractère arobase dans la ligne de texte donnée et les remplace par des espaces. On applique ce type d'expression régulière pour tous les caractères spéciaux courants\\ (\verb.°%_&:"'@#~=*^|£€$;!?<>(){}[]+-,\/.).
 
 \subsubsection{Racinisation}
 \paragraph{}
