@@ -81,7 +81,7 @@ sub racinisation {
 
 #Liste de mots que l'on considèrera comme inutiles (ainsi que des suffixes/extensions type "ll" pour "will"),
 #d'autres mots pourront être ajoutés à la liste pour éliminer les mots que l'on aura empiriquement déterminés comme inutiles
-my @mots_inutiles = qw/able about across after ain all almost also am among an and any are aren as at be because been but by can cannot could couldn dear did didn do does doesn don either else ever every for from get got had has hasn have he her hers him his how however i if in into is isn it its just least let like likely may me might mightn most must mustn my neither no nor not of off often on only or other our own rather said say says shan she should shouldn since so some than that the their them then there these they this tis to too twas us wants was wasn we were weren what when where which while who whom why will with won would wouldn yet you your ll ve re a b c d e f g h i j k l m n o p q r s t u v w x y z/;
+my @mots_inutiles = qw/able about across after ain all almost also am among an and any are aren as at be because been but by can cannot could couldn dear did didn do does doesn don either else ever every for from get got had has hasn have he her hers him his how however if in into is isn it its just least let like likely may me might mightn most must mustn my neither no nor not of off often on only or other our own rather said say says shan she should shouldn since so some than that the their them then there these they this tis to too twas us wants was wasn we were weren what when where which while who whom why will with won would wouldn yet you your ll ve re a b c d e f g h i j k l m n o p q r s t u v w x y z/;
 #Fonction supprimant les mots inutiles
 sub suppression_inutiles {
 	my $ligne = shift;
@@ -134,6 +134,7 @@ foreach (@liste_sgm) {
 	my $nom = $_;
 	$nom =~ s/\.sgm/.pure.sgm/;
 	open(SORTIE,">$nom") or die("Erreur lors de la creation du fichier $nom.");
+	#On ajoute une balise d'entrée XML pour se rapprocher du standard XML (il faut une balise englobante)
 	print(SORTIE "<xml>");
 	
 	#Définition de variables pour la boucle qui suit
@@ -142,6 +143,7 @@ foreach (@liste_sgm) {
 	my @reste;			#Tableau tampon pour le reste une ligne splitée
 	#On parcourt toutes les lignes du fichier entrée
 	while(my $ligne = <ENTREE>) {
+		#On supprime les entités &#... qui entrainent des erreurs lors du parsing XML par JAVA
 		$ligne =~ s/&#//g;
 		#On traite les cas particuliers des lignes où les balises suivantes apparaissent (seul le texte entre ces balises doit être purifié)
 		#La méthode est la suivante : quand on trouve une balise ouvrante, on écrit dans le fichier ce qui était devant,
@@ -210,6 +212,7 @@ foreach (@liste_sgm) {
 		$ligne = purification($ligne) if($purifier) ;
 		print(SORTIE $ligne);
 	}
+	#On ajoute une balise de sortie XML
 	print(SORTIE "</xml>");
 	
 	#On ferme les fichiers entrée et de sortie

@@ -1,2 +1,88 @@
 \subsection{Épuration des données}
-Lorem ipsum....
+
+\paragraph{}
+Les articles que nous souhaitons catégoriser nous sont fournis sous forme de fichiers XML-like contenant diverses informations sur les articles ainsi que les articles en eux-mêmes. Ces articles sont bien évidemment rédigés en anglais standard facilement compréhensible pour un être humain. Mais dans notre cas, nous devons nous assurer que la forme du texte permet bien au programme d'identifier les mots correctement par rapport à leur signification. Nous avons donc rédigé un script Perl (\texttt{purify.pl}) qui analyse les fichiers Reuters et qui traite les textes dans les balises TITLE, DATELINE, BODY, et UNKNOWN pour en retirer les caractères indésirables (ponctuation sauf points, dièses, slashs, etc.) et les mots inutiles et qui risqueraient de perturber la catégorisation (you, and, just, etc.), et qui racinise les mots. Nous trouvons donc ci-dessous un exemple d'article brut provenant d'un fichier Reuters suivi du résultat après épuration.
+
+\lstset{language=XML}
+\begin{lstlisting}
+<REUTERS TOPICS="NO" LEWISSPLIT="TRAIN" CGISPLIT="TRAINING-SET" OLDID="5545" NEWID="2">
+<DATE>26-FEB-1987 15:02:20.00</DATE>
+<TOPICS></TOPICS>
+<PLACES><D>usa</D></PLACES>
+<PEOPLE></PEOPLE>
+<ORGS></ORGS>
+<EXCHANGES></EXCHANGES>
+<COMPANIES></COMPANIES>
+<UNKNOWN> 
+&#5;&#5;&#5;F Y
+&#22;&#22;&#1;f0708&#31;reute
+d f BC-STANDARD-OIL-&lt;SRD>-TO   02-26 0082</UNKNOWN>
+<TEXT>&#2;
+<TITLE>STANDARD OIL &lt;SRD> TO FORM FINANCIAL UNIT</TITLE>
+<DATELINE>    CLEVELAND, Feb 26 - </DATELINE><BODY>Standard Oil Co and BP North America
+Inc said they plan to form a venture to manage the money market
+borrowing and investment activities of both companies.
+    BP North America is a subsidiary of British Petroleum Co
+Plc &lt;BP>, which also owns a 55 pct interest in Standard Oil.
+    The venture will be called BP/Standard Financial Trading
+and will be operated by Standard Oil under the oversight of a
+joint management committee.
+
+ Reuter
+&#3;</BODY></TEXT>
+</REUTERS>
+\end{lstlisting}
+
+\lstset{language=XML}
+\begin{lstlisting}
+<REUTERS TOPICS="NO" LEWISSPLIT="TRAIN" CGISPLIT="TRAINING-SET" OLDID="5545" NEWID="2">
+<DATE>26-FEB-1987 15:02:20.00</DATE>
+<TOPICS></TOPICS>
+<PLACES><D>usa</D></PLACES>
+<PEOPLE></PEOPLE>
+<ORGS></ORGS>
+<EXCHANGES></EXCHANGES>
+<COMPANIES></COMPANIES>
+<UNKNOWN> 
+5 5 5 
+22 22 1 f070831 reut
+ bc standard oil srd 02 26 0082</UNKNOWN>
+<TEXT>2;
+<TITLE>standard oil srd form financi unit</TITLE>
+<DATELINE> cleveland feb 26</DATELINE><BODY>standard oil co bp north america
+inc plan form ventur manag monei market
+borrow invest activ both companies.
+ bp north america subsidiari british petroleum co
+plc bp own 55 pct interest standard oil.
+ ventur call bp standard financi trade
+ oper standard oil under oversight 
+joint manag committee.
+
+ reuter
+3</BODY></TEXT>
+</REUTERS>
+\end{lstlisting}
+
+\subsubsection{Principe du script}
+\paragraph{}
+Notre script parcourt l'ensemble des fichiers Reuters (.sgm) et analyse le fichier de la façon suivante : lorsqu'une balise TITLE, DATELINE, BODY, ou UNKNOWN est détectée, le texte situé entre ces balises est purifié via une fonction qui supprime les caractères et les mots inutiles et racinise les mots. Le script supprime également toutes les entités \&\# du fichier qui provoquent un échec du parsing XML en JAVA. Le résultat de ce traitement est placé dans des fichiers .pure.sgm.
+
+\subsubsection{Suppression des caractères inutiles}
+\paragraph{}
+L'ensemble des caractères inutiles (et perturbateurs pour la catégorisation) est supprimé via des expressions regulières Perl.
+
+\lstset{language=Perl}
+\begin{lstlisting}
+$ligne =~ s/@/ /g;
+\end{lstlisting}
+
+\paragraph{}
+L'exemple ci-dessus supprime toutes les occurences du caractère arobase dans la ligne de texte donnée et les remplace par des espaces. On applique ce type d'expression régulière pour tous les caractères spéciaux courants (\verb.°%_&:"'@#~=*^|£€$;!?<>(){}[]+-,\/.).
+
+\subsubsection{Racinisation}
+\paragraph{}
+La racinisation est l'action de convertir un mot en sa racine (par exemple les mots "texte", "textes", "textuel" ou "textuellement" ont tous pour même racine : "texte"). Pour réaliser la racinisation nous avons fait appel à un module Perl en Open Source qui utilise l'algorithme de Porter pour raciniser les mots anglais (\texttt{ http://ldc.usb.ve/~vdaniel/porter.pm }). Il nous a donc suffit d'appeler une fonction \texttt{porter(<word>)} sur le texte à raciniser pour en obtenir la racine.
+
+\subsubsection{Suppression des mots inutiles}
+\paragraph{}
+Il existe en anglais comme dans toutes les langues des mots qui ne servent qu'à des fins grammaticales et/ou qui n'apporte pas d'information pertinente pour exprimer le fond du texte. Nous avons pu trouver sur internet une liste de mots courants en anglais et qui auraient pu perturber la catégorisation (able, after, since, must, why, etc.). Le script supprime donc chacun de ces mots à l'aide d'expressions régulières en les remplaçant par des espaces.
