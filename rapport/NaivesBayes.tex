@@ -7,12 +7,12 @@ Nous avons choisit d'implémenter un des plus simple algorithme qui se base sur 
 \paragraph{}
 Voici les différentes étapes : 
 \begin{enumerate}
-\item Lors de l'apprentissage, avec des documents d’entraînement, on calcul la probabilité qu'un mot appartienne à un document sachant à quel topic ce dernier appartient. Pour cette partie, les vecteurs de mots des différents textes sont considérés indépendant pour pouvoir utiliser les différentes lois des probabilités.
+\item Lors de l'apprentissage, avec des documents d’entraînement, on calcule la probabilité qu'un mot appartienne à un document sachant à quel topic ce dernier appartient. Pour cette partie, les vecteurs de mots des différents textes sont considérés indépendants pour pouvoir utiliser les différentes lois des probabilités.
 Pour un mot d'un texte, on obtient la probabilité suivante : P(mj|ci) P( m$_{j}$ | c$_{i}$). Pour cela, on calcule le nombre d’occurrence d'un mot dans un texte (nk) et on applique la formule suivante :
 \[\frac{ nk +1} {n+|vocabulaire|}\]
- où n est le nombre total de mot dans le texte et |vocabulaire| le nombre de mots clés.
+ où n est le nombre total de mots dans le texte et |vocabulaire| le nombre de mots clés.
 
-\item Lors de la phase de test, lorsque l'on souhait classer un nouveau document, on calcule la probabilité qu'il appartienne à chaque topic grâce à l'équation de bayes suivante : 
+\item Lors de la phase de test, lorsque l'on souhaite classer un nouveau document, on calcule la probabilité qu'il appartienne à chaque topic grâce à l'équation de bayes suivante : 
 \[ P( c_{i} | t_{j})= \frac{P(c_{i}).P(t_{j}|c_{i})}{ P(t_{j})}\] 
 où on peut estimer $tj=<m1 m2 m3... mn>$, ce qui nous donne : 
 \[ P( c_{i} | m_{1} m_{2} m_{3}... m_{n})= \frac{P(c_{i}).P(m1 m2 m3... mn|c_{i})}{ P( m_{1} m_{2} m_{3}... m_{n})}\]
@@ -23,7 +23,7 @@ On cherche donc le topic pour lequel la probabilité d'avoir les mots de notre t
 
 
 \subsubsection{En pratique}
-\paragraph{Phase d'entraînement}  Nous récupérons un à un les textes prévus pour la phase d'entraînement. Ils seront tous traité individuellement dans un premier temps. Pour chaque texte,nous avons calculé l'espérance d'un mot dans un texte défini par un certain topic. Pour cela la fréquence de chaque mot est calculé selon le texte puis elle est divisé par la taille du texte. Cette valeur est ensuite mémorisé avec le topic associé au texte. Si le topic pour ce mot existe déjà, la moyenne est enregistré avec une pondération de 1,25 pour donner plus de poids face aux autres topics. Nous avons également privilégié le mot lorsqu'il appartenait au titre. Pour cela nous l'avons pondéré de 1.75. A la fin de cette phase, nous obtenons pour chaque mot, un ensemble d'association entre topic et probabilité. 
+\paragraph{Phase d'entraînement}  Nous récupérons un à un les textes prévus pour la phase d'entraînement. Ils seront tous traités individuellement dans un premier temps. Pour chaque texte,nous avons calculé l'espérance d'un mot dans un texte défini par un certain topic. Pour cela la fréquence de chaque mot est calculée selon le texte puis elle est divisée par la taille du texte. Cette valeur est ensuite mémorisée avec le topic associé au texte. Si le topic pour ce mot existe déjà, la moyenne est enregistrée avec une pondération de 1,25 pour donner plus de poids face aux autres topics. Nous avons également privilégié le mot lorsqu'il appartenait au titre. Pour cela nous l'avons pondéré de 1.75. A la fin de cette phase, nous obtenons pour chaque mot, un ensemble d'association entre topic et probabilité. 
 
 
-\paragraph{Phase de test}  Nous comparons chaque mot qui se situe dans le texte à tester avec les mots de la base que nous avons créé. Pour chaque mot, on enregistre dans une map, les topics trouvés, si le topic existe déjà, on incrémente sa fréquence et sinon on l'ajoute dans la map avec une valeur initial de 1. Une fois que tout le texte a été analysé, on extrait les deux topics qui ont les fréquences le plus élevées.
+\paragraph{Phase de test}  Nous comparons chaque mot qui se situe dans le texte à tester avec les mots de la base que nous avons créée. Pour chaque mot, on enregistre dans une map, les topics trouvés, si le topic existe déjà, on incrémente sa fréquence et sinon on l'ajoute dans la map avec une valeur initiale de 1. Une fois que tout le texte a été analysé, on extrait les deux topics qui ont les fréquences les plus élevées.

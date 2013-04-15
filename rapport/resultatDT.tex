@@ -2,9 +2,9 @@
 
 \subsubsection{Ensemble de test}
 
-En raison de temps d'exécution beaucoup trop long due aux limitations de la bibliothèque que nous avons choisi d'utiliser, nous n’avons malheureusement pas pu tester notre implémentation sur l’ensemble de tous les documents présent dans le corpus.
+En raison de temps d'exécution beaucoup trop long du aux limitations de la bibliothèque que nous avons choisi d'utiliser, nous n’avons malheureusement pas pu tester notre implémentation sur l’ensemble de tous les documents présents dans le corpus.
 \paragraph{}
-Nous avons toutefois réussi à obtenir des résultats concluant sur un ensemble de test plus restreint composé d’un ensemble d’apprentissage contenant 187 articles et d’un ensemble de test qui en comprend 125.
+Nous avons toutefois réussi à obtenir des résultats concluants sur un ensemble de test plus restreint composé d’un ensemble d’apprentissage contenant 187 articles et d’un ensemble de test qui en comprend 125.
 \paragraph{}
 L’ensemble d’apprentissage contient des articles sur 42 sujets et possède 2762 mots différents.
 
@@ -28,9 +28,9 @@ Voici les résultats que nous obtenons.
 
 Voici les conclusions que nous pouvons tirer de ces résultats.
 \paragraph{}
-La suppression des mots sémantiquement inutiles n’a que peu d’impact sur les résultats de l’algorithme. En effet, ces mots étant présent dans la plus part des articles, ils ne sont que très rarement chois pour créer une règle. Toutefois, leur suppression limite le nombre d’attribut de l’arbre, et améliore significativement le temps d’exécution.
+La suppression des mots sémantiquement inutiles n’a que peu d’impact sur les résultats de l’algorithme. En effet, ces mots étant présents dans la plupart des articles, ils ne sont que très rarement choisis pour créer une règle. Toutefois, leur suppression limite le nombre d’attribut de l’arbre, et améliore significativement le temps d’exécution.
 \paragraph{}
 La racinisation des mots permet de limiter encore plus le nombre d’attributs et donc de diminuer le temps d’exécution. Cependant, la perte d’information qu’elle implique a aussi un impact sur les performances de l’algorithme.
 \paragraph{}
-Effectuer la suppression des mots inutiles avant de raciniser les mots restant semble limiter cette perte d’information, et permet de plus d’amélioré encore le temps d’exécution. Cette méthode de prétraitement donne ainsi le meilleur rapport performance / temps d’exécution.
+Effectuer la suppression des mots inutiles avant de raciniser les mots restant semble limiter cette perte d’information, et permet de plus d’améliorer encore le temps d’exécution. Cette méthode de prétraitement donne ainsi le meilleur rapport performance / temps d’exécution.
 

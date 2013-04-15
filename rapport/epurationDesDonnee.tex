@@ -4,7 +4,7 @@
 Les articles que nous souhaitons catégoriser nous sont fournis sous forme de fichiers XML-like contenant diverses informations sur les articles ainsi que les articles en eux-mêmes. Ces articles sont bien évidemment rédigés en anglais standard facilement compréhensible pour un être humain. Mais dans notre cas, nous devons nous assurer que la forme du texte permet bien au programme d'identifier les mots correctement par rapport à leur signification.
 
 \paragraph{}
-Nous avons donc rédigé un script Perl (\texttt{purify.pl}) qui analyse les fichiers Reuters et qui traite les textes dans les balises TITLE, DATELINE, BODY, et UNKNOWN pour en retirer les caractères indésirables (ponctuation sauf points, dièses, slashs, etc.) et les mots inutiles et qui risqueraient de perturber la catégorisation (you, and, just, etc.), et qui racinise les mots. Nous trouvons donc ci-dessous un exemple d'article brut provenant d'un fichier Reuters suivi du résultat après épuration.
+Nous avons donc rédigé un script Perl (\texttt{purify.pl}) qui analyse les fichiers Reuters et qui traite les textes dans les balises TITLE, DATELINE, BODY, et UNKNOWN pour en retirer les caractères indésirables (dièses, slashs, ponctuation sauf points, etc.) et les mots inutiles qui risqueraient de perturber la catégorisation (you, and, just, etc.), et qui racinise les mots. Nous trouvons donc ci-dessous un exemple d'article brut provenant d'un fichier Reuters suivi du résultat après épuration.
 ~~\\
 \begin{minted}[linenos,
                samepage,
