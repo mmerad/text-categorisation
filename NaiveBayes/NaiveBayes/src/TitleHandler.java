@@ -34,11 +34,7 @@ public class TitleHandler extends DefaultHandler{
 	//détection d'ouverture de balise
 	public void startElement(String uri, String localName,
 			String qName, Attributes attributes) throws SAXException{
-		/*if(qName.equals("TITLE")){
-			inTitle = true;
-			buffer = new StringBuffer();
-			
-		}*/
+		
 		if(qName.equals("xml")){
 			titles = new LinkedList<String>();
 		}else if(qName.equals("TITLE")){
