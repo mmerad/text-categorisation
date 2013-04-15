@@ -1,3 +1,7 @@
+/**
+* @file FileFinder
+* @brief renvoie un tableau de File aprés qu'on lui ait donné un dossier, il rend tous les fichiers du dossier
+*/
 import java.io.File;
 
 public class FileFinder {

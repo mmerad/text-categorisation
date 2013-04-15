@@ -1,6 +1,5 @@
 /**
- * 
- * @author agranet
+ * @file NaivesBayes
  * @detail Le fichier principal
  */
 import java.io.File;
@@ -24,8 +23,9 @@ public class NaiveBayes {
 	private int nb_text;
 	private int nb_success;
 	private static final float POIDS_TITRE = (float)1.75;//(float) 1.75;
+	private String train_path = "./train";
+	private String test_path = "./test";
 	//MOT -> TOPIC -> FREQUENCE
-	
 	Map<String,Map<String,Float>> probaMot;
 	
 	public NaiveBayes()
@@ -35,13 +35,12 @@ public class NaiveBayes {
 	
 	private float calcule()
 	{
-		File[] fs = new FileFinder().findFiles("./train_ss");
-		
+		File[] fs = new FileFinder().findFiles(train_path);
+		//le jeux de train
 		for(int i = 0; i< fs.length; i++)
 		{
-			
 			try {
-				parseXML(fs[i]);
+				parseXML(fs[i]);//on parse tt les fichers 
 			} catch (ParserConfigurationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -53,16 +52,16 @@ public class NaiveBayes {
 				e.printStackTrace();
 			}
 		}
-		
+		//celui de test
 		nb_text = 0;
 		nb_success = 0;
-		File[] ftest = new FileFinder().findFiles("./test_ss");//ATTENTION mettre test
+		File[] ftest = new FileFinder().findFiles(test_path);
 		for(int i = 0; i< ftest.length; i++)
 		{
 			
 			try {
-				parseXMLTest(fs[i]);
-				//parseXML(fs[i]);
+				parseXMLTest(fs[i]);//le test
+				parseXML(fs[i]);//apprentissage continue à commenter si non voulue
 			} catch (ParserConfigurationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -74,13 +73,14 @@ public class NaiveBayes {
 				e.printStackTrace();
 			}
 		}
+		//calcul du ratio
 		float ratio = ((float) nb_success *(float)100)/ ((float) nb_text);
 		int rates = nb_text - nb_success;
 		System.out.println("Resultat : \n  "+ nb_text+" analysés,  "+ ratio+"% de success , et "+rates+" echecs");
 		return ratio;
 	}
 	
-	//train
+	//train + parsageXML
 	private void parseXML(File f) throws ParserConfigurationException, SAXException, IOException
 	{
 		// crÃ©ation d'une fabrique de parseurs SAX
@@ -112,6 +112,7 @@ public class NaiveBayes {
 		
 	}
 	
+	//prend une liste de Topic et rend une String de la forme "Topic1 Topic2" utile pour l'algoNaives
 	private String transformString(LinkedList<Topic> l)
 	{
 		String rep = "";
@@ -126,7 +127,7 @@ public class NaiveBayes {
 		return rep;
 	}
 	
-	//test
+	//test + parsageXMl
 	private void parseXMLTest(File f) throws ParserConfigurationException, SAXException, IOException
 	{
 		// crÃ©ation d'une fabrique de parseurs SAX
@@ -143,18 +144,19 @@ public class NaiveBayes {
 		List<Body> lb = gestionnaire.getArticles();
 		List<LinkedList<Topic>> lt = gestionnaireTopic.getthemes();
 		
-		for(Body b : lb)
+		for(Body b : lb)//Pour tout les Body du fichier
 		{
 			int index = lb.indexOf(b);
-			if(b.contenu != "")
+			if(b.contenu != "")//si on un contenue dans notre Body
 			{
-				nb_text ++;
-				List<String> rep = association(b.contenu);
-				List<String> topics = separateTopic(lt.get(index));
-				boolean  is_succes = false;
+				nb_text ++;//on analyse un text de plus
+				
+				List<String> rep = association(b.contenu);//on cherche les topic associé à notre Body
+				List<String> topics = separateTopic(lt.get(index));//la liste des Topics fournit dans le fichier pour la comparaison
+				boolean  is_succes = false;//sert pour le ratio success/analysé pour eviter d'avoir 2 valeurs bonne pour un texte
 				for(String s : rep)
 				{
-					if(!topics.isEmpty())
+					if(!topics.isEmpty())//Si on en a pas on va pas pouvoir comparer
 					{
 						if(topics.contains(s) && !is_succes)
 						{
@@ -165,10 +167,11 @@ public class NaiveBayes {
 							System.out.println("Topic trouvé par notre algorithme "+ s+", liste des topics du texte "+ topics.toString() );
 					}
 				}
-			}//else{System.out.println(lt.get(index).toString());}
+			}
 		}	
 	}
 	
+	//formatage de la liste de Topic en liste de String 
 	private List<String> separateTopic(LinkedList<Topic> l)
 	{
 		List<String> ls = new ArrayList<String>();
@@ -284,7 +287,7 @@ public class NaiveBayes {
 			}// if(b != "")	
 		}// algoNaive FIN
 	
-	
+		//Algo NaivesBayes pour les titres
 		public void algoNaiveTitre(String[] tpc, String[] title){
 			HashMap<String,Map<String,Float>> freq2 = new HashMap<String,Map<String,Float>>();
 			
@@ -339,6 +342,7 @@ public class NaiveBayes {
 		 * Fonction Association
 		 * Retourne les topics d'un texte fourni en paramètre
 		 * @param text_test
+		 * @return List<String> la liste de topic proposé
 		 */
 	
 		public List<String> association(String text_test){
@@ -418,7 +422,7 @@ public class NaiveBayes {
 		 */
 		
 		public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		
 		NaiveBayes nb = new NaiveBayes();
 		float ratio = nb.calcule();
 	}
